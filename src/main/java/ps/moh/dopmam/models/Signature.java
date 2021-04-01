@@ -16,6 +16,12 @@ public class Signature {
     @Property()
     private String date;
 
+    @Property()
+    private String name;
+
+    @Property()
+    private String role;
+
     public String getId() {
         return id;
     }
@@ -39,9 +45,35 @@ public class Signature {
         this.date = date;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        if (!Utils.IsNotNullOrEmpty(name)) {
+            throw new IllegalArgumentException();
+        }
+        this.name = name;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        if (!Utils.IsNotNullOrEmpty(role)) {
+            throw new IllegalArgumentException();
+        }
+        this.role = role;
+    }
+
     public Signature(@JsonProperty("id") final String id,
-                     @JsonProperty("date") final String date) {
+                     @JsonProperty("date") final String date,
+                     @JsonProperty("name") final String name,
+                     @JsonProperty("role") final String role) {
         this.id = id;
         this.date = date;
+        this.name = name;
+        this.role = role;
     }
 }
