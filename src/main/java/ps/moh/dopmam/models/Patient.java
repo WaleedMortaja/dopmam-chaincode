@@ -6,6 +6,8 @@ import org.hyperledger.fabric.contract.annotation.Property;
 import ps.moh.dopmam.utils.Result;
 import ps.moh.dopmam.utils.Utils;
 
+import java.util.Date;
+
 @DataType()
 public class Patient {
     @Property()
@@ -61,11 +63,9 @@ public class Patient {
      */
     public void setNationalId(final String nationalId) {
         Result<Integer> result = Utils.StringToInt(nationalId);
-        if (result.success && result.payload > 0) {
-            this.nationalId = nationalId;
-        } else {
+        if (!result.success)
             throw new IllegalArgumentException();
-        }
+        this.nationalId = nationalId;
     }
 
     /**
@@ -83,11 +83,10 @@ public class Patient {
      * @param firstName the firstName of the patient
      */
     public void setFirstName(final String firstName) {
-        if (!firstName.isEmpty()) {
-            this.firstName = firstName;
-        } else {
+        if (!Utils.IsNotNullOrEmpty(firstName)) {
             throw new IllegalArgumentException();
         }
+        this.firstName = firstName;
     }
 
     /**
@@ -105,7 +104,7 @@ public class Patient {
      * @param lastName the lastName of the patient
      */
     public void setLastName(final String lastName) {
-        if (lastName == null || lastName.isEmpty()) {
+        if (!Utils.IsNotNullOrEmpty(lastName)) {
             throw new IllegalArgumentException();
         }
         this.lastName = lastName;
@@ -126,6 +125,9 @@ public class Patient {
      * @param gender the gender of the patient
      */
     public void setGender(final Gender gender) {
+        if (gender == null || (gender != Gender.Male && gender != Gender.Female)) {
+            throw new IllegalArgumentException();
+        }
         this.gender = gender;
     }
 
@@ -144,6 +146,10 @@ public class Patient {
      * @param insuranceNumber the insuranceNumber of the patient
      */
     public void setInsuranceNumber(final String insuranceNumber) {
+        Result<Integer> result = Utils.StringToInt(insuranceNumber);
+        if (!result.success) {
+            throw new IllegalArgumentException();
+        }
         this.insuranceNumber = insuranceNumber;
     }
 
@@ -162,6 +168,10 @@ public class Patient {
      * @param insuranceDueDate the insuranceDueDate of the patient
      */
     public void setInsuranceDueDate(final String insuranceDueDate) {
+        Result<Date> result = Utils.StringToDate(insuranceDueDate);
+        if (!result.success) {
+            throw new IllegalArgumentException();
+        }
         this.insuranceDueDate = insuranceDueDate;
     }
 
@@ -180,6 +190,10 @@ public class Patient {
      * @param dateOfBirth the dateOfBirth of the patient
      */
     public void setDateOfBirth(final String dateOfBirth) {
+        Result<Date> result = Utils.StringToDate(dateOfBirth);
+        if (!result.success) {
+            throw new IllegalArgumentException();
+        }
         this.dateOfBirth = dateOfBirth;
     }
 }
