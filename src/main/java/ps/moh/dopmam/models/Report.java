@@ -6,30 +6,46 @@ import org.hyperledger.fabric.contract.annotation.Property;
 import ps.moh.dopmam.utils.Result;
 import ps.moh.dopmam.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @DataType()
 public class Report {
     @Property()
-    public String id;
+    private String id;
 
     @Property()
-    public String patientNationalId;
+    private String patientNationalId;
 
     @Property()
-    public String date;
+    private String date;
 
     @Property()
-    public String summary;
+    private String summary;
 
     @Property()
-    public String diagnosis;
+    private String diagnosis;
 
     @Property()
-    public String procedure;
+    private String procedure;
 
     @Property()
-    public String transferId;
+    private String transferId;
+
+    @Property()
+    private Signature doctorSignature;
+
+    @Property()
+    private Signature departmentSignature;
+
+    @Property()
+    private Signature hospitalSignature;
+
+    @Property()
+    private ArrayList<Signature> medicalCommitteeSignatures;
+
+    @Property()
+    private ArrayList<Signature> financialCommitteeSignatures;
 
     public String getId() {
         return id;
@@ -109,6 +125,61 @@ public class Report {
         this.transferId = transferId;
     }
 
+    public Signature getDoctorSignature() {
+        return doctorSignature;
+    }
+
+    public void setDoctorSignature(Signature doctorSignature) {
+        if (doctorSignature == null) {
+            throw new IllegalArgumentException();
+        }
+        this.doctorSignature = doctorSignature;
+    }
+
+    public Signature getDepartmentSignature() {
+        return departmentSignature;
+    }
+
+    public void setDepartmentSignature(Signature departmentSignature) {
+        if (departmentSignature == null) {
+            throw new IllegalArgumentException();
+        }
+        this.departmentSignature = departmentSignature;
+    }
+
+    public Signature getHospitalSignature() {
+        return hospitalSignature;
+    }
+
+    public void setHospitalSignature(Signature hospitalSignature) {
+        if (hospitalSignature == null) {
+            throw new IllegalArgumentException();
+        }
+        this.hospitalSignature = hospitalSignature;
+    }
+
+    public ArrayList<Signature> getMedicalCommitteeSignatures() {
+        return medicalCommitteeSignatures;
+    }
+
+    public void setMedicalCommitteeSignatures(ArrayList<Signature> medicalCommitteeSignatures) {
+        if (medicalCommitteeSignatures == null) {
+            throw new IllegalArgumentException();
+        }
+        this.medicalCommitteeSignatures.addAll(medicalCommitteeSignatures);
+    }
+
+    public ArrayList<Signature> getFinancialCommitteeSignatures() {
+        return financialCommitteeSignatures;
+    }
+
+    public void setFinancialCommitteeSignatures(ArrayList<Signature> financialCommitteeSignatures) {
+        if (financialCommitteeSignatures == null) {
+            throw new IllegalArgumentException();
+        }
+        this.financialCommitteeSignatures.addAll(financialCommitteeSignatures);
+    }
+
     public Report(@JsonProperty("id") final String id,
                   @JsonProperty("patientNationalId") final String patientNationalId,
                   @JsonProperty("date") final String date,
@@ -123,5 +194,7 @@ public class Report {
         this.diagnosis = diagnosis;
         this.procedure = procedure;
         this.transferId = transferId;
+        medicalCommitteeSignatures = new ArrayList<>();
+        financialCommitteeSignatures = new ArrayList<>();
     }
 }
