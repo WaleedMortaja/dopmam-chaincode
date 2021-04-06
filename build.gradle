@@ -68,4 +68,4 @@ test {
 }
 
 check.dependsOn jacocoTestCoverageVerification
-installDist.dependsOn check
+//installDist.dependsOn check
