@@ -3,7 +3,6 @@ package ps.moh.dopmam.models;
 import com.owlike.genson.annotation.JsonProperty;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
-import ps.moh.dopmam.utils.Result;
 import ps.moh.dopmam.utils.Utils;
 
 import java.util.Date;
@@ -11,69 +10,68 @@ import java.util.Date;
 @DataType()
 public class Signature {
     @Property()
-    private String id;
+    private String signerId;
 
     @Property()
-    private String date;
+    private Date signDate;
 
     @Property()
-    private String name;
+    private String signerName;
 
     @Property()
-    private String role;
+    private String signerRole;
 
-    public String getId() {
-        return id;
+    public Signature(@JsonProperty("id") final String signerId,
+                     @JsonProperty("date") final Date signDate,
+                     @JsonProperty("name") final String signerName,
+                     @JsonProperty("role") final String signerRole) {
+        this.signerId = signerId;
+        this.signDate = signDate;
+        this.signerName = signerName;
+        this.signerRole = signerRole;
     }
 
-    public void setId(String id) {
-        if (!Utils.IsNotNullOrEmpty(id)) {
+    public String getSignerId() {
+        return signerId;
+    }
+
+    public void setSignerId(String signerId) {
+        if (!Utils.IsNotNullOrEmpty(signerId)) {
             throw new IllegalArgumentException();
         }
-        this.id = id;
+        this.signerId = signerId;
     }
 
-    public String getDate() {
-        return date;
+    public Date getSignDate() {
+        return signDate;
     }
 
-    public void setDate(String date) {
-        Result<Date> result = Utils.StringToDate(date);
-        if (!result.success) {
+    public void setSignDate(Date signDate) {
+        if (signDate == null) {
             throw new IllegalArgumentException();
         }
-        this.date = date;
+        this.signDate = signDate;
     }
 
-    public String getName() {
-        return name;
+    public String getSignerName() {
+        return signerName;
     }
 
-    public void setName(String name) {
-        if (!Utils.IsNotNullOrEmpty(name)) {
+    public void setSignerName(String signerName) {
+        if (!Utils.IsNotNullOrEmpty(signerName)) {
             throw new IllegalArgumentException();
         }
-        this.name = name;
+        this.signerName = signerName;
     }
 
-    public String getRole() {
-        return role;
+    public String getSignerRole() {
+        return signerRole;
     }
 
-    public void setRole(String role) {
-        if (!Utils.IsNotNullOrEmpty(role)) {
+    public void setSignerRole(String signerRole) {
+        if (!Utils.IsNotNullOrEmpty(signerRole)) {
             throw new IllegalArgumentException();
         }
-        this.role = role;
-    }
-
-    public Signature(@JsonProperty("id") final String id,
-                     @JsonProperty("date") final String date,
-                     @JsonProperty("name") final String name,
-                     @JsonProperty("role") final String role) {
-        this.id = id;
-        this.date = date;
-        this.name = name;
-        this.role = role;
+        this.signerRole = signerRole;
     }
 }

@@ -15,8 +15,12 @@ import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 import ps.moh.dopmam.models.Gender;
 import ps.moh.dopmam.models.Patient;
+import ps.moh.dopmam.utils.Utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Contract(
@@ -42,8 +46,8 @@ public class SmartContract implements ContractInterface {
      * @param ctx the transaction context
      */
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public void initLedger(final Context ctx) {
-        CreatePatient(ctx, "123456789", "Ahmed", "Mortaja", Gender.Male, "30-10-1997", "2020-123", "01-01-2022");
+    public void initLedger(final Context ctx) throws ParseException {
+        CreatePatient(ctx, "123456789", "Ahmed", "Mortaja", Gender.Male, new SimpleDateFormat("dd/MM/yyyy").parse("30-10-1997"), "2020123", new SimpleDateFormat("dd/MM/yyyy").parse("11/11/2011"));
     }
 
     /**
@@ -65,9 +69,9 @@ public class SmartContract implements ContractInterface {
                                  final String firstName,
                                  final String lastName,
                                  final Gender gender,
-                                 final String dateOfBirth,
+                                 final Date dateOfBirth,
                                  final String insuranceNumber,
-                                 final String insuranceDueDate) {
+                                 final Date insuranceDueDate) {
 
         ChaincodeStub stub = ctx.getStub();
 
@@ -110,7 +114,7 @@ public class SmartContract implements ContractInterface {
     private boolean PatientExists(final Context ctx, final String nationalId) {
         ChaincodeStub stub = ctx.getStub();
         String patientJSON = stub.getStringState(nationalId);
-        return (patientJSON != null && !patientJSON.isEmpty());
+        return Utils.IsNotNullOrEmpty(patientJSON);
     }
 
     /**
@@ -135,10 +139,5 @@ public class SmartContract implements ContractInterface {
 
         final String response = genson.serialize(queryResults);
         return response;
-    }
-
-    private enum Error {
-        NotFound,
-        AlreadyExists
     }
 }

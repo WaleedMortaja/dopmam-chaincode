@@ -3,7 +3,6 @@ package ps.moh.dopmam.models;
 import com.owlike.genson.annotation.JsonProperty;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
-import ps.moh.dopmam.utils.Result;
 import ps.moh.dopmam.utils.Utils;
 
 import java.util.Date;
@@ -23,21 +22,21 @@ public class Patient {
     private Gender gender;
 
     @Property()
-    private String dateOfBirth;
+    private Date dateOfBirth;
 
     @Property()
     private String insuranceNumber;
 
     @Property()
-    private String insuranceDueDate;
+    private Date insuranceDueDate;
 
     public Patient(@JsonProperty("nationalId") final String nationalId,
                    @JsonProperty("firstName") final String firstName,
                    @JsonProperty("lastName") final String lastName,
                    @JsonProperty("gender") final Gender gender,
-                   @JsonProperty("dateOfBirth") final String dateOfBirth,
+                   @JsonProperty("dateOfBirth") final Date dateOfBirth,
                    @JsonProperty("insuranceNumber") final String insuranceNumber,
-                   @JsonProperty("insuranceDueDate") final String insuranceDueDate) {
+                   @JsonProperty("insuranceDueDate") final Date insuranceDueDate) {
         this.nationalId = nationalId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -62,9 +61,9 @@ public class Patient {
      * @param nationalId the nationalId of the patient
      */
     public void setNationalId(final String nationalId) {
-        Result<Integer> result = Utils.StringToInt(nationalId);
-        if (!result.success)
+        if (!Utils.IsNotNullOrEmpty(nationalId)) {
             throw new IllegalArgumentException();
+        }
         this.nationalId = nationalId;
     }
 
@@ -125,7 +124,7 @@ public class Patient {
      * @param gender the gender of the patient
      */
     public void setGender(final Gender gender) {
-        if (gender == null || (gender != Gender.Male && gender != Gender.Female)) {
+        if (gender == null) {
             throw new IllegalArgumentException();
         }
         this.gender = gender;
@@ -146,8 +145,7 @@ public class Patient {
      * @param insuranceNumber the insuranceNumber of the patient
      */
     public void setInsuranceNumber(final String insuranceNumber) {
-        Result<Integer> result = Utils.StringToInt(insuranceNumber);
-        if (!result.success) {
+        if (!Utils.IsNotNullOrEmpty(insuranceNumber)) {
             throw new IllegalArgumentException();
         }
         this.insuranceNumber = insuranceNumber;
@@ -158,7 +156,7 @@ public class Patient {
      *
      * @return the insuranceDueDate of the patient
      */
-    public String getInsuranceDueDate() {
+    public Date getInsuranceDueDate() {
         return insuranceDueDate;
     }
 
@@ -167,9 +165,8 @@ public class Patient {
      *
      * @param insuranceDueDate the insuranceDueDate of the patient
      */
-    public void setInsuranceDueDate(final String insuranceDueDate) {
-        Result<Date> result = Utils.StringToDate(insuranceDueDate);
-        if (!result.success) {
+    public void setInsuranceDueDate(final Date insuranceDueDate) {
+        if (insuranceDueDate == null) {
             throw new IllegalArgumentException();
         }
         this.insuranceDueDate = insuranceDueDate;
@@ -180,7 +177,7 @@ public class Patient {
      *
      * @return the dateOfBirth of the patient
      */
-    public String getDateOfBirth() {
+    public Date getDateOfBirth() {
         return dateOfBirth;
     }
 
@@ -189,9 +186,8 @@ public class Patient {
      *
      * @param dateOfBirth the dateOfBirth of the patient
      */
-    public void setDateOfBirth(final String dateOfBirth) {
-        Result<Date> result = Utils.StringToDate(dateOfBirth);
-        if (!result.success) {
+    public void setDateOfBirth(final Date dateOfBirth) {
+        if (dateOfBirth == null) {
             throw new IllegalArgumentException();
         }
         this.dateOfBirth = dateOfBirth;

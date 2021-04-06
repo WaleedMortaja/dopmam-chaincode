@@ -1,5 +1,7 @@
 package ps.moh.dopmam.utils;
 
+import org.hyperledger.fabric.shim.ledger.CompositeKey;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -28,5 +30,14 @@ public final class Utils {
 
     public static Boolean IsNotNullOrEmpty(final String s) {
         return s != null && !s.isEmpty();
+    }
+
+    public static Result<String> GetCompositeKey(String objectType, String... arguments) {
+        try {
+            CompositeKey compositeKey = new CompositeKey(objectType, arguments);
+            return new Result<String>(true, compositeKey.toString(),"");
+        } catch (Exception e) {
+            return new Result<String>(false, null, e.getMessage());
+        }
     }
 }

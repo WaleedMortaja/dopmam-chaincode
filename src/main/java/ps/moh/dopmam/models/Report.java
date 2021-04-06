@@ -3,22 +3,22 @@ package ps.moh.dopmam.models;
 import com.owlike.genson.annotation.JsonProperty;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
-import ps.moh.dopmam.utils.Result;
 import ps.moh.dopmam.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @DataType()
 public class Report {
     @Property()
-    private String id;
+    private String reportId;
 
     @Property()
     private String patientNationalId;
 
     @Property()
-    private String date;
+    private Date reportDate;
 
     @Property()
     private String summary;
@@ -42,20 +42,38 @@ public class Report {
     private Signature hospitalSignature;
 
     @Property()
-    private ArrayList<Signature> medicalCommitteeSignatures;
+    private List<Signature> medicalCommitteeSignatures;
 
     @Property()
-    private ArrayList<Signature> financialCommitteeSignatures;
+    private List<Signature> financialCommitteeSignatures;
 
-    public String getId() {
-        return id;
+    public Report(@JsonProperty("id") final String reportId,
+                  @JsonProperty("patientNationalId") final String patientNationalId,
+                  @JsonProperty("date") final Date reportDate,
+                  @JsonProperty("summary") final String summary,
+                  @JsonProperty("diagnosis") final String diagnosis,
+                  @JsonProperty("procedure") final String procedure,
+                  @JsonProperty("transferId") final String transferId) {
+        this.reportId = reportId;
+        this.patientNationalId = patientNationalId;
+        this.reportDate = reportDate;
+        this.summary = summary;
+        this.diagnosis = diagnosis;
+        this.procedure = procedure;
+        this.transferId = transferId;
+        medicalCommitteeSignatures = new ArrayList<>();
+        financialCommitteeSignatures = new ArrayList<>();
     }
 
-    public void setId(String id) {
-        if (!Utils.IsNotNullOrEmpty(id)) {
+    public String getReportId() {
+        return reportId;
+    }
+
+    public void setReportId(String reportId) {
+        if (!Utils.IsNotNullOrEmpty(reportId)) {
             throw new IllegalArgumentException();
         }
-        this.id = id;
+        this.reportId = reportId;
     }
 
     public String getPatientNationalId() {
@@ -69,16 +87,15 @@ public class Report {
         this.patientNationalId = patientNationalId;
     }
 
-    public String getDate() {
-        return date;
+    public Date getReportDate() {
+        return reportDate;
     }
 
-    public void setDate(String date) {
-        Result<Date> result = Utils.StringToDate(date);
-        if (!result.success) {
+    public void setReportDate(Date reportDate) {
+        if (reportDate == null) {
             throw new IllegalArgumentException();
         }
-        this.date = date;
+        this.reportDate = reportDate;
     }
 
     public String getSummary() {
@@ -158,43 +175,25 @@ public class Report {
         this.hospitalSignature = hospitalSignature;
     }
 
-    public ArrayList<Signature> getMedicalCommitteeSignatures() {
+    public List<Signature> getMedicalCommitteeSignatures() {
         return medicalCommitteeSignatures;
     }
 
-    public void setMedicalCommitteeSignatures(ArrayList<Signature> medicalCommitteeSignatures) {
+    public void setMedicalCommitteeSignatures(List<Signature> medicalCommitteeSignatures) {
         if (medicalCommitteeSignatures == null) {
             throw new IllegalArgumentException();
         }
-        this.medicalCommitteeSignatures.addAll(medicalCommitteeSignatures);
+        this.medicalCommitteeSignatures = medicalCommitteeSignatures;
     }
 
-    public ArrayList<Signature> getFinancialCommitteeSignatures() {
+    public List<Signature> getFinancialCommitteeSignatures() {
         return financialCommitteeSignatures;
     }
 
-    public void setFinancialCommitteeSignatures(ArrayList<Signature> financialCommitteeSignatures) {
+    public void setFinancialCommitteeSignatures(List<Signature> financialCommitteeSignatures) {
         if (financialCommitteeSignatures == null) {
             throw new IllegalArgumentException();
         }
-        this.financialCommitteeSignatures.addAll(financialCommitteeSignatures);
-    }
-
-    public Report(@JsonProperty("id") final String id,
-                  @JsonProperty("patientNationalId") final String patientNationalId,
-                  @JsonProperty("date") final String date,
-                  @JsonProperty("summary") final String summary,
-                  @JsonProperty("diagnosis") final String diagnosis,
-                  @JsonProperty("procedure") final String procedure,
-                  @JsonProperty("transferId") final String transferId) {
-        this.id = id;
-        this.patientNationalId = patientNationalId;
-        this.date = date;
-        this.summary = summary;
-        this.diagnosis = diagnosis;
-        this.procedure = procedure;
-        this.transferId = transferId;
-        medicalCommitteeSignatures = new ArrayList<>();
-        financialCommitteeSignatures = new ArrayList<>();
+        this.financialCommitteeSignatures = financialCommitteeSignatures;
     }
 }

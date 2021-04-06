@@ -3,7 +3,6 @@ package ps.moh.dopmam.models;
 import com.owlike.genson.annotation.JsonProperty;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
-import ps.moh.dopmam.utils.Result;
 import ps.moh.dopmam.utils.Utils;
 
 import java.util.Date;
@@ -11,7 +10,7 @@ import java.util.Date;
 @DataType()
 public class Transfer {
     @Property()
-    private String id;
+    private String transferId;
 
     @Property()
     private String country;
@@ -29,20 +28,38 @@ public class Transfer {
     private String doctor;
 
     @Property()
-    private String date;
+    private Date transferDate;
 
     @Property()
-    private String coverage;
+    private int coverage;
 
-    public String getId() {
-        return id;
+    public Transfer(@JsonProperty("id") final String transferId,
+                    @JsonProperty("country") final String country,
+                    @JsonProperty("city") final String city,
+                    @JsonProperty("hospital") final String hospital,
+                    @JsonProperty("department") final String department,
+                    @JsonProperty("doctor") final String doctor,
+                    @JsonProperty("date") final Date transferDate,
+                    @JsonProperty("coverage") final int coverage) {
+        this.transferId = transferId;
+        this.country = country;
+        this.city = city;
+        this.hospital = hospital;
+        this.department = department;
+        this.doctor = doctor;
+        this.transferDate = transferDate;
+        this.coverage = coverage;
     }
 
-    public void setId(String id) {
-        if (!Utils.IsNotNullOrEmpty(id)) {
+    public String getTransferId() {
+        return transferId;
+    }
+
+    public void setTransferId(String transferId) {
+        if (!Utils.IsNotNullOrEmpty(transferId)) {
             throw new IllegalArgumentException();
         }
-        this.id = id;
+        this.transferId = transferId;
     }
 
     public String getCountry() {
@@ -100,45 +117,25 @@ public class Transfer {
         this.doctor = doctor;
     }
 
-    public String getDate() {
-        return date;
+    public Date getTransferDate() {
+        return transferDate;
     }
 
-    public void setDate(String date) {
-        Result<Date> result = Utils.StringToDate(date);
-        if (!result.success) {
+    public void setTransferDate(Date transferDate) {
+        if (transferDate == null) {
             throw new IllegalArgumentException();
         }
-        this.date = date;
+        this.transferDate = transferDate;
     }
 
-    public String getCoverage() {
+    public int getCoverage() {
         return coverage;
     }
 
-    public void setCoverage(String coverage) {
-        Result<Integer> result = Utils.StringToInt(coverage);
-        if (!result.success) {
+    public void setCoverage(int coverage) {
+        if (coverage < 0) {
             throw new IllegalArgumentException();
         }
-        this.coverage = coverage;
-    }
-
-    public Transfer(@JsonProperty("id") final String id,
-                    @JsonProperty("country") final String country,
-                    @JsonProperty("city") final String city,
-                    @JsonProperty("hospital") final String hospital,
-                    @JsonProperty("department") final String department,
-                    @JsonProperty("doctor") final String doctor,
-                    @JsonProperty("date") final String date,
-                    @JsonProperty("coverage") final String coverage) {
-        this.id = id;
-        this.country = country;
-        this.city = city;
-        this.hospital = hospital;
-        this.department = department;
-        this.doctor = doctor;
-        this.date = date;
         this.coverage = coverage;
     }
 }
