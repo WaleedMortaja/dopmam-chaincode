@@ -61,7 +61,7 @@ public class Patient {
      * @param nationalId the nationalId of the patient
      */
     public void setNationalId(final String nationalId) {
-        if (!Utils.IsNotNullOrEmpty(nationalId)) {
+        if (!Utils.isNotNullOrEmpty(nationalId)) {
             throw new IllegalArgumentException();
         }
         this.nationalId = nationalId;
@@ -82,7 +82,7 @@ public class Patient {
      * @param firstName the firstName of the patient
      */
     public void setFirstName(final String firstName) {
-        if (!Utils.IsNotNullOrEmpty(firstName)) {
+        if (!Utils.isNotNullOrEmpty(firstName)) {
             throw new IllegalArgumentException();
         }
         this.firstName = firstName;
@@ -103,7 +103,7 @@ public class Patient {
      * @param lastName the lastName of the patient
      */
     public void setLastName(final String lastName) {
-        if (!Utils.IsNotNullOrEmpty(lastName)) {
+        if (!Utils.isNotNullOrEmpty(lastName)) {
             throw new IllegalArgumentException();
         }
         this.lastName = lastName;
@@ -145,7 +145,7 @@ public class Patient {
      * @param insuranceNumber the insuranceNumber of the patient
      */
     public void setInsuranceNumber(final String insuranceNumber) {
-        if (!Utils.IsNotNullOrEmpty(insuranceNumber)) {
+        if (!Utils.isNotNullOrEmpty(insuranceNumber)) {
             throw new IllegalArgumentException();
         }
         this.insuranceNumber = insuranceNumber;

@@ -56,7 +56,7 @@ public class Transfer {
     }
 
     public void setTransferId(String transferId) {
-        if (!Utils.IsNotNullOrEmpty(transferId)) {
+        if (!Utils.isNotNullOrEmpty(transferId)) {
             throw new IllegalArgumentException();
         }
         this.transferId = transferId;
@@ -67,7 +67,7 @@ public class Transfer {
     }
 
     public void setCountry(String country) {
-        if (!Utils.IsNotNullOrEmpty(country)) {
+        if (!Utils.isNotNullOrEmpty(country)) {
             throw new IllegalArgumentException();
         }
         this.country = country;
@@ -78,7 +78,7 @@ public class Transfer {
     }
 
     public void setCity(String city) {
-        if (!Utils.IsNotNullOrEmpty(city)) {
+        if (!Utils.isNotNullOrEmpty(city)) {
             throw new IllegalArgumentException();
         }
         this.city = city;
@@ -89,7 +89,7 @@ public class Transfer {
     }
 
     public void setHospital(String hospital) {
-        if (!Utils.IsNotNullOrEmpty(hospital)) {
+        if (!Utils.isNotNullOrEmpty(hospital)) {
             throw new IllegalArgumentException();
         }
         this.hospital = hospital;
@@ -100,7 +100,7 @@ public class Transfer {
     }
 
     public void setDepartment(String department) {
-        if (!Utils.IsNotNullOrEmpty(department)) {
+        if (!Utils.isNotNullOrEmpty(department)) {
             throw new IllegalArgumentException();
         }
         this.department = department;
@@ -111,7 +111,7 @@ public class Transfer {
     }
 
     public void setDoctor(String doctor) {
-        if (!Utils.IsNotNullOrEmpty(doctor)) {
+        if (!Utils.isNotNullOrEmpty(doctor)) {
             throw new IllegalArgumentException();
         }
         this.doctor = doctor;

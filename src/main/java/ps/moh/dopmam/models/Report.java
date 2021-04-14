@@ -70,7 +70,7 @@ public class Report {
     }
 
     public void setReportId(String reportId) {
-        if (!Utils.IsNotNullOrEmpty(reportId)) {
+        if (!Utils.isNotNullOrEmpty(reportId)) {
             throw new IllegalArgumentException();
         }
         this.reportId = reportId;
@@ -81,7 +81,7 @@ public class Report {
     }
 
     public void setPatientNationalId(String patientNationalId) {
-        if (!Utils.IsNotNullOrEmpty(patientNationalId)) {
+        if (!Utils.isNotNullOrEmpty(patientNationalId)) {
             throw new IllegalArgumentException();
         }
         this.patientNationalId = patientNationalId;
@@ -103,7 +103,7 @@ public class Report {
     }
 
     public void setSummary(String summary) {
-        if (!Utils.IsNotNullOrEmpty(summary)) {
+        if (!Utils.isNotNullOrEmpty(summary)) {
             throw new IllegalArgumentException();
         }
         this.summary = summary;
@@ -114,7 +114,7 @@ public class Report {
     }
 
     public void setDiagnosis(String diagnosis) {
-        if (!Utils.IsNotNullOrEmpty(diagnosis)) {
+        if (!Utils.isNotNullOrEmpty(diagnosis)) {
             throw new IllegalArgumentException();
         }
         this.diagnosis = diagnosis;
@@ -125,7 +125,7 @@ public class Report {
     }
 
     public void setProcedure(String procedure) {
-        if (!Utils.IsNotNullOrEmpty(procedure)) {
+        if (!Utils.isNotNullOrEmpty(procedure)) {
             throw new IllegalArgumentException();
         }
         this.procedure = procedure;
@@ -136,7 +136,7 @@ public class Report {
     }
 
     public void setTransferId(String transferId) {
-        if (!Utils.IsNotNullOrEmpty(transferId)) {
+        if (!Utils.isNotNullOrEmpty(transferId)) {
             throw new IllegalArgumentException();
         }
         this.transferId = transferId;

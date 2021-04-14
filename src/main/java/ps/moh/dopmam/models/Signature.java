@@ -36,7 +36,7 @@ public class Signature {
     }
 
     public void setSignerId(String signerId) {
-        if (!Utils.IsNotNullOrEmpty(signerId)) {
+        if (!Utils.isNotNullOrEmpty(signerId)) {
             throw new IllegalArgumentException();
         }
         this.signerId = signerId;
@@ -58,7 +58,7 @@ public class Signature {
     }
 
     public void setSignerName(String signerName) {
-        if (!Utils.IsNotNullOrEmpty(signerName)) {
+        if (!Utils.isNotNullOrEmpty(signerName)) {
             throw new IllegalArgumentException();
         }
         this.signerName = signerName;
@@ -69,7 +69,7 @@ public class Signature {
     }
 
     public void setSignerRole(String signerRole) {
-        if (!Utils.IsNotNullOrEmpty(signerRole)) {
+        if (!Utils.isNotNullOrEmpty(signerRole)) {
             throw new IllegalArgumentException();
         }
         this.signerRole = signerRole;

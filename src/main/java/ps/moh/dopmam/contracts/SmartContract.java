@@ -1,6 +1,7 @@
 package ps.moh.dopmam.contracts;
 
 import com.owlike.genson.Genson;
+import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.Contact;
@@ -9,7 +10,6 @@ import org.hyperledger.fabric.contract.annotation.Default;
 import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.License;
 import org.hyperledger.fabric.contract.annotation.Transaction;
-import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static ps.moh.dopmam.utils.Utils.throwChaincodeException;
+
 @Contract(
         name = "dopmam_smart_contract",
         info = @Info(
@@ -33,9 +35,10 @@ import java.util.List;
                         name = "Apache 2.0 License",
                         url = "http://www.apache.org/licenses/LICENSE-2.0.html"),
                 contact = @Contact(
-                        email = "a.transfer@example.com",
-                        name = "Adrian Transfer",
-                        url = "https://hyperledger.example.com")))
+                        email = "aelnemer1@smail.ucas.edu.ps, wmortaja1@smail.ucas.edu.ps, aafifi4@smail.ucas.edu.ps",
+                        name = "Ahmed A. El Nemer, Waleed M. Mortaja, Ahmed A. Afifi",
+                        url = "https://newucas.ucas.edu.ps/")))
+
 @Default
 public class SmartContract implements ContractInterface {
     private final Genson genson = new Genson();
@@ -47,7 +50,7 @@ public class SmartContract implements ContractInterface {
      */
     @Transaction(intent = Transaction.TYPE.SUBMIT)
     public void initLedger(final Context ctx) throws ParseException {
-        CreatePatient(ctx, "123456789", "Ahmed", "Mortaja", Gender.Male, new SimpleDateFormat("dd/MM/yyyy").parse("30-10-1997"), "2020123", new SimpleDateFormat("dd/MM/yyyy").parse("11/11/2011"));
+        createPatient(ctx, "123456789", "Ahmed", "Mortaja", Gender.Male, new SimpleDateFormat("dd/MM/yyyy").parse("30-10-1997"), "2020123", new SimpleDateFormat("dd/MM/yyyy").parse("11/11/2011"));
     }
 
     /**
@@ -64,7 +67,7 @@ public class SmartContract implements ContractInterface {
      * @return the created patient
      */
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public Patient CreatePatient(final Context ctx,
+    public Patient createPatient(final Context ctx,
                                  final String nationalId,
                                  final String firstName,
                                  final String lastName,
@@ -75,18 +78,21 @@ public class SmartContract implements ContractInterface {
 
         ChaincodeStub stub = ctx.getStub();
 
-        if (PatientExists(ctx, nationalId)) {
-            //TODO: Edit this peace of code
-//            String errorMessage = String.format("Patient %s already exists", assetID);
-//            System.out.println(errorMessage);
-//            throw new ChaincodeException(errorMessage, AssetTransferErrors.ASSET_ALREADY_EXISTS.toString());
-            throw new ChaincodeException(Error.AlreadyExists.toString());
+        if (patientExists(ctx, nationalId)) {
+            String message = String.format("Patient with national id: %s already exists", nationalId);
+            throwChaincodeException(message, Error.AlreadyExists);
         }
 
         Patient patient = new Patient(nationalId, firstName, lastName, gender, dateOfBirth, insuranceNumber, insuranceDueDate);
         String patientJSON = genson.serialize(patient);
         stub.putStringState(nationalId, patientJSON);
         return patient;
+    }
+
+    public void Test(final Context ctx) throws Exception {
+        ChaincodeStub stub = ctx.getStub();
+        final ClientIdentity identity = new ClientIdentity(stub);
+        String MSPID = identity.getMSPID();
     }
 
     /**
@@ -96,25 +102,22 @@ public class SmartContract implements ContractInterface {
      * @param nationalId the nationalId of the patient being deleted
      */
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public void DeleteAsset(final Context ctx, final String nationalId) {
+    public void deletePatient(final Context ctx, final String nationalId) {
         ChaincodeStub stub = ctx.getStub();
 
-        if (!PatientExists(ctx, nationalId)) {
-            //TODO: Edit this also
-//            String errorMessage = String.format("Patient %s does not exist", nationalId);
-//            System.out.println(errorMessage);
-//            throw new ChaincodeException(errorMessage, Error.NotFound.toString());
-            throw new ChaincodeException(Error.NotFound.toString());
+        if (!patientExists(ctx, nationalId)) {
+            String message = String.format("Patient with national id: %s does not exist", nationalId);
+            throwChaincodeException(message, Error.NotFound);
         }
 
         stub.delState(nationalId);
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    private boolean PatientExists(final Context ctx, final String nationalId) {
+    private boolean patientExists(final Context ctx, final String nationalId) {
         ChaincodeStub stub = ctx.getStub();
         String patientJSON = stub.getStringState(nationalId);
-        return Utils.IsNotNullOrEmpty(patientJSON);
+        return Utils.isNotNullOrEmpty(patientJSON);
     }
 
     /**
@@ -124,7 +127,7 @@ public class SmartContract implements ContractInterface {
      * @return array of patients found on the ledger
      */
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public String GetAllPatients(final Context ctx) {
+    public String getAllPatients(final Context ctx) {
         ChaincodeStub stub = ctx.getStub();
 
         List<Patient> queryResults = new ArrayList<>();
