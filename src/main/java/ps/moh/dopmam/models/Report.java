@@ -3,7 +3,6 @@ package ps.moh.dopmam.models;
 import com.owlike.genson.annotation.JsonProperty;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
-import ps.moh.dopmam.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,188 +11,197 @@ import java.util.List;
 @DataType()
 public class Report {
     @Property()
-    private String reportId;
+    private final long reportId;
 
     @Property()
-    private String patientNationalId;
+    private final long patientNationalId;
 
     @Property()
-    private Date reportDate;
+    private final Date reportDate;
 
     @Property()
-    private String summary;
+    private final String summary;
 
     @Property()
-    private String diagnosis;
+    private final String diagnosis;
 
     @Property()
-    private String procedure;
+    private final String procedure;
 
     @Property()
-    private String transferId;
+    private String transferToCountry;
 
     @Property()
-    private Signature doctorSignature;
+    private String transferToCity;
 
     @Property()
-    private Signature departmentSignature;
+    private String transferToHospital;
 
     @Property()
-    private Signature hospitalSignature;
+    private String transferToDepartment;
 
     @Property()
-    private List<Signature> medicalCommitteeSignatures;
+    private Date transferDueDate;
 
     @Property()
-    private List<Signature> financialCommitteeSignatures;
+    private double coverage;
 
-    public Report(@JsonProperty("id") final String reportId,
-                  @JsonProperty("patientNationalId") final String patientNationalId,
-                  @JsonProperty("date") final Date reportDate,
+    @Property()
+    private String doctorSignature;
+
+    @Property()
+    private String doctorDepartment;
+
+    @Property()
+    private String headOfDepartmentSignature;
+
+    @Property()
+    private String hospitalManagerSignature;
+
+    @Property()
+    private final List<String> medicalCommitteeSignatures;
+
+    @Property()
+    private final List<String> financialCommitteeSignatures;
+
+    public Report(@JsonProperty("reportId") final long reportId,
+                  @JsonProperty("patientNationalId") final long patientNationalId,
+                  @JsonProperty("reportDate") final Date reportDate,
                   @JsonProperty("summary") final String summary,
                   @JsonProperty("diagnosis") final String diagnosis,
-                  @JsonProperty("procedure") final String procedure,
-                  @JsonProperty("transferId") final String transferId) {
+                  @JsonProperty("procedure") final String procedure) {
         this.reportId = reportId;
         this.patientNationalId = patientNationalId;
         this.reportDate = reportDate;
         this.summary = summary;
         this.diagnosis = diagnosis;
         this.procedure = procedure;
-        this.transferId = transferId;
-        medicalCommitteeSignatures = new ArrayList<>();
-        financialCommitteeSignatures = new ArrayList<>();
+
+        this.medicalCommitteeSignatures = new ArrayList<>();
+        this.financialCommitteeSignatures = new ArrayList<>();
     }
 
-    public String getReportId() {
+    public long getReportId() {
         return reportId;
     }
 
-    public void setReportId(String reportId) {
-        if (!Utils.isNotNullOrEmpty(reportId)) {
-            throw new IllegalArgumentException();
-        }
-        this.reportId = reportId;
-    }
-
-    public String getPatientNationalId() {
+    public long getPatientNationalId() {
         return patientNationalId;
-    }
-
-    public void setPatientNationalId(String patientNationalId) {
-        if (!Utils.isNotNullOrEmpty(patientNationalId)) {
-            throw new IllegalArgumentException();
-        }
-        this.patientNationalId = patientNationalId;
     }
 
     public Date getReportDate() {
         return reportDate;
     }
 
-    public void setReportDate(Date reportDate) {
-        if (reportDate == null) {
-            throw new IllegalArgumentException();
-        }
-        this.reportDate = reportDate;
-    }
-
     public String getSummary() {
         return summary;
-    }
-
-    public void setSummary(String summary) {
-        if (!Utils.isNotNullOrEmpty(summary)) {
-            throw new IllegalArgumentException();
-        }
-        this.summary = summary;
     }
 
     public String getDiagnosis() {
         return diagnosis;
     }
 
-    public void setDiagnosis(String diagnosis) {
-        if (!Utils.isNotNullOrEmpty(diagnosis)) {
-            throw new IllegalArgumentException();
-        }
-        this.diagnosis = diagnosis;
-    }
-
     public String getProcedure() {
         return procedure;
     }
 
-    public void setProcedure(String procedure) {
-        if (!Utils.isNotNullOrEmpty(procedure)) {
-            throw new IllegalArgumentException();
-        }
-        this.procedure = procedure;
+    public String getTransferToCountry() {
+        return transferToCountry;
     }
 
-    public String getTransferId() {
-        return transferId;
+    public String getTransferToCity() {
+        return transferToCity;
     }
 
-    public void setTransferId(String transferId) {
-        if (!Utils.isNotNullOrEmpty(transferId)) {
-            throw new IllegalArgumentException();
-        }
-        this.transferId = transferId;
+    public String getTransferToHospital() {
+        return transferToHospital;
     }
 
-    public Signature getDoctorSignature() {
+    public String getTransferToDepartment() {
+        return transferToDepartment;
+    }
+
+    public Date getTransferDueDate() {
+        return transferDueDate;
+    }
+
+    public double getCoverage() {
+        return coverage;
+    }
+
+    public String getDoctorSignature() {
         return doctorSignature;
     }
 
-    public void setDoctorSignature(Signature doctorSignature) {
-        if (doctorSignature == null) {
-            throw new IllegalArgumentException();
+    public String getDoctorDepartment() {
+        return doctorDepartment;
+    }
+
+    public String getHeadOfDepartmentSignature() {
+        return headOfDepartmentSignature;
+    }
+
+    public String getHospitalManagerSignature() {
+        return hospitalManagerSignature;
+    }
+
+    public List<String> getMedicalCommitteeSignatures() {
+
+        return new ArrayList<>(medicalCommitteeSignatures);
+    }
+
+    public List<String> getFinancialCommitteeSignatures() {
+        return new ArrayList<>(financialCommitteeSignatures);
+    }
+
+    public void setDoctorSignature(String doctorSignature) {
+        if (this.doctorSignature == null) {
+            this.doctorSignature = doctorSignature;
+            return;
         }
-        this.doctorSignature = doctorSignature;
+
+        throw new IllegalStateException("Doctor had already signed!");
     }
 
-    public Signature getDepartmentSignature() {
-        return departmentSignature;
+    public void setDoctorDepartment(String doctorDepartment) {
+        this.doctorDepartment = doctorDepartment;
     }
 
-    public void setDepartmentSignature(Signature departmentSignature) {
-        if (departmentSignature == null) {
-            throw new IllegalArgumentException();
+    public void setHeadOfDepartmentSignature(final String headOfDepartmentSignature) {
+        if (this.headOfDepartmentSignature == null) {
+            this.headOfDepartmentSignature = headOfDepartmentSignature;
+            return;
         }
-        this.departmentSignature = departmentSignature;
+
+        throw new IllegalStateException("Head of Department had already signed!");
     }
 
-    public Signature getHospitalSignature() {
-        return hospitalSignature;
-    }
-
-    public void setHospitalSignature(Signature hospitalSignature) {
-        if (hospitalSignature == null) {
-            throw new IllegalArgumentException();
+    public void setHospitalManagerSignature(String hospitalManagerSignature) {
+        if (this.hospitalManagerSignature == null) {
+            this.hospitalManagerSignature = hospitalManagerSignature;
+            return;
         }
-        this.hospitalSignature = hospitalSignature;
+
+        throw new IllegalStateException("Hospital Manager had already signed!");
     }
 
-    public List<Signature> getMedicalCommitteeSignatures() {
-        return medicalCommitteeSignatures;
+    public void addMedicalCommitteeSignature(String medicalCommitteeSignature) {
+        this.medicalCommitteeSignatures.add(medicalCommitteeSignature);
     }
 
-    public void setMedicalCommitteeSignatures(List<Signature> medicalCommitteeSignatures) {
-        if (medicalCommitteeSignatures == null) {
-            throw new IllegalArgumentException();
-        }
-        this.medicalCommitteeSignatures = medicalCommitteeSignatures;
+    public void addFinancialCommitteeSignature(String financialCommitteeSignature) {
+        this.financialCommitteeSignatures.add(financialCommitteeSignature);
     }
 
-    public List<Signature> getFinancialCommitteeSignatures() {
-        return financialCommitteeSignatures;
+    public void updateTransferDetails(final String transferToCountry, final String transferToCity, final String transferToHospital, final String transferToDepartment, final Date transferDueDate) {
+        this.transferToCountry = transferToCountry;
+        this.transferToCity = transferToCity;
+        this.transferToHospital = transferToHospital;
+        this.transferToDepartment = transferToDepartment;
+        this.transferDueDate = transferDueDate;
     }
 
-    public void setFinancialCommitteeSignatures(List<Signature> financialCommitteeSignatures) {
-        if (financialCommitteeSignatures == null) {
-            throw new IllegalArgumentException();
-        }
-        this.financialCommitteeSignatures = financialCommitteeSignatures;
+    public void updateTransferCoverage(double coverage) {
+        this.coverage = coverage;
     }
 }

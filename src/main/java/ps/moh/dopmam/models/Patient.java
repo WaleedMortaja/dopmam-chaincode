@@ -10,7 +10,7 @@ import java.util.Date;
 @DataType()
 public class Patient {
     @Property()
-    private String nationalId;
+    private long nationalId;
 
     @Property()
     private String firstName;
@@ -25,17 +25,17 @@ public class Patient {
     private Date dateOfBirth;
 
     @Property()
-    private String insuranceNumber;
+    private long insuranceNumber;
 
     @Property()
     private Date insuranceDueDate;
 
-    public Patient(@JsonProperty("nationalId") final String nationalId,
+    public Patient(@JsonProperty("nationalId") final long nationalId,
                    @JsonProperty("firstName") final String firstName,
                    @JsonProperty("lastName") final String lastName,
                    @JsonProperty("gender") final Gender gender,
                    @JsonProperty("dateOfBirth") final Date dateOfBirth,
-                   @JsonProperty("insuranceNumber") final String insuranceNumber,
+                   @JsonProperty("insuranceNumber") final long insuranceNumber,
                    @JsonProperty("insuranceDueDate") final Date insuranceDueDate) {
         this.nationalId = nationalId;
         this.firstName = firstName;
@@ -51,20 +51,8 @@ public class Patient {
      *
      * @return the nationalId of the patietnt
      */
-    public String getNationalId() {
+    public long getNationalId() {
         return nationalId;
-    }
-
-    /**
-     * Set the nationalId for the patient.
-     *
-     * @param nationalId the nationalId of the patient
-     */
-    public void setNationalId(final String nationalId) {
-        if (!Utils.isNotNullOrEmpty(nationalId)) {
-            throw new IllegalArgumentException();
-        }
-        this.nationalId = nationalId;
     }
 
     /**
@@ -77,36 +65,12 @@ public class Patient {
     }
 
     /**
-     * Sets the firstName of the patient.
-     *
-     * @param firstName the firstName of the patient
-     */
-    public void setFirstName(final String firstName) {
-        if (!Utils.isNotNullOrEmpty(firstName)) {
-            throw new IllegalArgumentException();
-        }
-        this.firstName = firstName;
-    }
-
-    /**
      * Retrieves the lastName of the patient.
      *
      * @return the lastName of the patient
      */
     public String getLastName() {
         return lastName;
-    }
-
-    /**
-     * Sets the lastName of the patient.
-     *
-     * @param lastName the lastName of the patient
-     */
-    public void setLastName(final String lastName) {
-        if (!Utils.isNotNullOrEmpty(lastName)) {
-            throw new IllegalArgumentException();
-        }
-        this.lastName = lastName;
     }
 
     /**
@@ -119,36 +83,12 @@ public class Patient {
     }
 
     /**
-     * Sets the gender of the patient.
-     *
-     * @param gender the gender of the patient
-     */
-    public void setGender(final Gender gender) {
-        if (gender == null) {
-            throw new IllegalArgumentException();
-        }
-        this.gender = gender;
-    }
-
-    /**
      * Retrieves the insuranceNumber of the patient.
      *
      * @return the insuranceNumber of the patient
      */
-    public String getInsuranceNumber() {
+    public long getInsuranceNumber() {
         return insuranceNumber;
-    }
-
-    /**
-     * Sets the insuranceNumber of the patient.
-     *
-     * @param insuranceNumber the insuranceNumber of the patient
-     */
-    public void setInsuranceNumber(final String insuranceNumber) {
-        if (!Utils.isNotNullOrEmpty(insuranceNumber)) {
-            throw new IllegalArgumentException();
-        }
-        this.insuranceNumber = insuranceNumber;
     }
 
     /**
@@ -161,35 +101,11 @@ public class Patient {
     }
 
     /**
-     * Sets the insuranceDueDate of the patient.
-     *
-     * @param insuranceDueDate the insuranceDueDate of the patient
-     */
-    public void setInsuranceDueDate(final Date insuranceDueDate) {
-        if (insuranceDueDate == null) {
-            throw new IllegalArgumentException();
-        }
-        this.insuranceDueDate = insuranceDueDate;
-    }
-
-    /**
      * Retrieves the dateOfBirth of the patient.
      *
      * @return the dateOfBirth of the patient
      */
     public Date getDateOfBirth() {
         return dateOfBirth;
-    }
-
-    /**
-     * Sets the dateOfBirth of the patient.
-     *
-     * @param dateOfBirth the dateOfBirth of the patient
-     */
-    public void setDateOfBirth(final Date dateOfBirth) {
-        if (dateOfBirth == null) {
-            throw new IllegalArgumentException();
-        }
-        this.dateOfBirth = dateOfBirth;
     }
 }
