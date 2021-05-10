@@ -38,8 +38,8 @@ import static ps.moh.dopmam.utils.Utils.throwChaincodeException;
                         name = "Apache 2.0 License",
                         url = "http://www.apache.org/licenses/LICENSE-2.0.html"),
                 contact = @Contact(
-                        email = "ahmedelnemer02@gmail.com, waleedmortaja@protonmail.com, ahmedafifi1500@gmail.com",
-                        name = "Ahmed A. El Nemer, Waleed M. Mortaja, Ahmed A. Afifi")))
+                        email = "ahmedelnemer02@gmail.com",
+                        name = "Ahmed A. El Nemer, Waleed M. Mortaja")))
 
 @Default
 public class SmartContract implements ContractInterface {
