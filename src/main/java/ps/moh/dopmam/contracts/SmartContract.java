@@ -109,6 +109,7 @@ public class SmartContract implements ContractInterface {
         return "tempDepartment";
     }
 
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
     public void sign(final Context ctx, final long reportId) throws IOException, CertificateException {
         // TODO create ReportExist
 
@@ -140,7 +141,6 @@ public class SmartContract implements ContractInterface {
         }
     }
 
-    @Transaction(intent = Transaction.TYPE.EVALUATE)
     private boolean patientExists(final Context ctx, final long nationalId) {
         ChaincodeStub stub = ctx.getStub();
         String patientJSON = stub.getStringState(Long.toString(nationalId));
