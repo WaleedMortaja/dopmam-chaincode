@@ -40,6 +40,7 @@ import java.util.List;
 
 @Default
 public class SmartContract implements ContractInterface {
+    private static final String CERTIFICATE_ATTRIBUTE_NAME_ROLE = "role";
     private final Genson genson = new Genson();
 
     /**
@@ -90,13 +91,13 @@ public class SmartContract implements ContractInterface {
     private boolean hasRole(final Context ctx, final String role) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
         final ClientIdentity identity = new ClientIdentity(stub);
-	 return identity.assertAttributeValue("role", role);
+        return identity.assertAttributeValue(CERTIFICATE_ATTRIBUTE_NAME_ROLE, role);
     }
 
     private String getRole(final Context ctx) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
         final ClientIdentity identity = new ClientIdentity(stub);
-        return identity.getAttributeValue("role");
+        return identity.getAttributeValue(CERTIFICATE_ATTRIBUTE_NAME_ROLE);
     }
 
     // TODO
@@ -167,7 +168,6 @@ public class SmartContract implements ContractInterface {
             System.out.println(patient.toString());
         }
 
-        final String response = genson.serialize(queryResults);
-        return response;
+        return genson.serialize(queryResults);
     }
 }
