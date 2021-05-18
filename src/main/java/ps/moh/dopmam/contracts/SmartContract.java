@@ -20,8 +20,6 @@ import ps.moh.dopmam.utils.Utils;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,13 +44,12 @@ public class SmartContract implements ContractInterface {
     private final Genson genson = new Genson();
 
     /**
-     * Creates some initial Patients on the ledger.
+     * Initialize the ledger.
      *
      * @param ctx the transaction context
      */
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public void initLedger(final Context ctx) throws ParseException {
-        createPatient(ctx, 123456789, "Ahmed", "Mortaja", Gender.Male, new SimpleDateFormat("dd/MM/yyyy").parse("30-10-1997"), 2020123, new SimpleDateFormat("dd/MM/yyyy").parse("11/11/2011"));
+    public void initLedger(final Context ctx) {
     }
 
     /**
