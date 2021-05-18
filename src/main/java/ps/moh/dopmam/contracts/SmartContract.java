@@ -10,6 +10,7 @@ import org.hyperledger.fabric.contract.annotation.Default;
 import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.License;
 import org.hyperledger.fabric.contract.annotation.Transaction;
+import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
@@ -23,8 +24,6 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static ps.moh.dopmam.utils.Utils.throwChaincodeException;
 
 @Contract(
         name = "dopmam_smart_contract",
@@ -78,8 +77,8 @@ public class SmartContract implements ContractInterface {
         ChaincodeStub stub = ctx.getStub();
 
         if (patientExists(ctx, nationalId)) {
-            String message = String.format("Patient with national id: %d already exists", nationalId);
-            throwChaincodeException(message, Error.AlreadyExists);
+            String message = String.format("Patient with national id: '%d' already exists", nationalId);
+            throw new ChaincodeException(message);
         }
 
         Patient patient = new Patient(nationalId, firstName, lastName, Gender.valueOf(gender), new Date(dateOfBirth), insuranceNumber, new Date(insuranceDueDate));
@@ -88,26 +87,16 @@ public class SmartContract implements ContractInterface {
         return patient;
     }
 
-    private boolean hasRole(final Context ctx, final String role) throws IOException {
-        try {
-            ChaincodeStub stub = ctx.getStub();
-            final ClientIdentity identity = new ClientIdentity(stub);
-            return identity.assertAttributeValue("role", role);
-        } catch (CertificateException e) {
-            return false;
-        }
+    private boolean hasRole(final Context ctx, final String role) throws CertificateException, IOException {
+        ChaincodeStub stub = ctx.getStub();
+        final ClientIdentity identity = new ClientIdentity(stub);
+        return identity.assertAttributeValue(CERTIFICATE_ATTRIBUTE_NAME_ROLE, role);
     }
 
-    private String getRole(final Context ctx) throws IOException {
-        try {
-            ChaincodeStub stub = ctx.getStub();
-            final ClientIdentity identity = new ClientIdentity(stub);
-            return identity.getAttributeValue("role");
-        } catch (CertificateException e) {
-            // TODO test this exception occurs when field does not exist.
-            return null;
-        }
-
+    private String getRole(final Context ctx) throws CertificateException, IOException {
+        ChaincodeStub stub = ctx.getStub();
+        final ClientIdentity identity = new ClientIdentity(stub);
+        return identity.getAttributeValue(CERTIFICATE_ATTRIBUTE_NAME_ROLE);
     }
 
     // TODO
@@ -120,7 +109,7 @@ public class SmartContract implements ContractInterface {
         return "tempDepartment";
     }
 
-    public void sign(final Context ctx, final long reportId) throws IOException {
+    public void sign(final Context ctx, final long reportId) throws IOException, CertificateException {
         // TODO create ReportExist
 
         ChaincodeStub stub = ctx.getStub();
@@ -147,7 +136,7 @@ public class SmartContract implements ContractInterface {
                 break;
 
             default:
-                throw new IllegalStateException("un expected user role!");
+                throw new CertificateException("un expected user role!");
         }
     }
 
