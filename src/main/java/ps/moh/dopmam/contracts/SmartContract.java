@@ -70,10 +70,10 @@ public class SmartContract implements ContractInterface {
                                  final long nationalId,
                                  final String firstName,
                                  final String lastName,
-                                 final Gender gender,
-                                 final Date dateOfBirth,
+                                 final String gender,
+                                 final long dateOfBirth,
                                  final long insuranceNumber,
-                                 final Date insuranceDueDate) {
+                                 final long insuranceDueDate) {
 
         ChaincodeStub stub = ctx.getStub();
 
@@ -82,7 +82,7 @@ public class SmartContract implements ContractInterface {
             throwChaincodeException(message, Error.AlreadyExists);
         }
 
-        Patient patient = new Patient(nationalId, firstName, lastName, gender, dateOfBirth, insuranceNumber, insuranceDueDate);
+        Patient patient = new Patient(nationalId, firstName, lastName, Gender.valueOf(gender), new Date(dateOfBirth), insuranceNumber, new Date(insuranceDueDate));
         String patientJSON = genson.serialize(patient);
         stub.putStringState(Long.toString(nationalId), patientJSON);
         return patient;
