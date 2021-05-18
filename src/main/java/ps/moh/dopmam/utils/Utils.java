@@ -1,8 +1,6 @@
 package ps.moh.dopmam.utils;
 
-import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ledger.CompositeKey;
-import ps.moh.dopmam.contracts.Error;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,10 +39,5 @@ public final class Utils {
         } catch (Exception e) {
             return new Result<String>(false, null, e.getMessage());
         }
-    }
-
-    public static void throwChaincodeException(String message, Error error) {
-        System.out.println(message);
-        throw new ChaincodeException(message, error.toString());
     }
 }
