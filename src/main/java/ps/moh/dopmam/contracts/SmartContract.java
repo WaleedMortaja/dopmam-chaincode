@@ -168,4 +168,45 @@ public class SmartContract implements ContractInterface {
         stub.putStringState(key, String.valueOf(reportId));
         return reportId;
     }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public long createReport(
+            final Context ctx,
+            final long patientNationalId,
+            final long reportDate,
+            final String summary,
+            final String diagnosis,
+            final String procedure
+    ) {
+        ChaincodeStub stub = ctx.getStub();
+
+        if (!patientExists(ctx, patientNationalId)) {
+            String message = String.format("Patient with national id: %d not exists", patientNationalId);
+            throw new ChaincodeException(message);
+        }
+
+        long id = getNewReportId(ctx);
+        Report report = new Report(id, patientNationalId, new Date(reportDate), summary, diagnosis, procedure);
+
+        String key = stub.createCompositeKey("Report", String.valueOf(id)).toString();
+        stub.putStringState(key, String.valueOf(report));
+        return id;
+    }
+
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    public String getAllReports(final Context ctx) {
+        ChaincodeStub stub = ctx.getStub();
+
+        List<Report> queryResults = new ArrayList<>();
+
+        QueryResultsIterator<KeyValue> results = stub.getStateByRange("", "");
+
+        for (KeyValue result : results) {
+            Report report = genson.deserialize(result.getStringValue(), Report.class);
+            queryResults.add(report);
+            System.out.println(report.toString());
+        }
+
+        return genson.serialize(queryResults);
+    }
 }
