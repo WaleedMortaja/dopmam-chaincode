@@ -22,6 +22,7 @@ import ps.moh.dopmam.utils.Utils;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -40,7 +41,7 @@ import java.util.List;
 
 @Default
 public class SmartContract implements ContractInterface {
-    private static final String CERTIFICATE_ATTRIBUTE_NAME_ROLE = "role";
+    private static final String CERTIFICATE_ATTRIBUTE_NAME_ROLE = "roles";
     private final Genson genson = new Genson();
 
     /**
@@ -50,6 +51,33 @@ public class SmartContract implements ContractInterface {
      */
     @Transaction(intent = Transaction.TYPE.SUBMIT)
     public void initLedger(final Context ctx) {
+    }
+
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    private String getDepartment(final Context ctx) throws CertificateException, IOException {
+        ChaincodeStub stub = ctx.getStub();
+        final ClientIdentity identity = new ClientIdentity(stub);
+        String subject = identity.getX509Certificate().getSubjectX500Principal().toString();
+        String OU = subject.split(",")[1];
+        String departmentOU = OU.split("\\+")[2];
+        return departmentOU.trim().substring(3);
+    }
+
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    private String getClientId(final Context ctx) throws CertificateException, IOException {
+        ChaincodeStub stub = ctx.getStub();
+        final ClientIdentity identity = new ClientIdentity(stub);
+        String subject = identity.getX509Certificate().getSubjectX500Principal().toString();
+        String CN = subject.split(",")[0];
+        return CN.trim().substring(3);
+    }
+
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    private boolean hasRole(final Context ctx, String roleName) throws CertificateException, IOException {
+        ChaincodeStub stub = ctx.getStub();
+        final ClientIdentity identity = new ClientIdentity(stub);
+        List<String> roles = Arrays.asList(identity.getAttributeValue(CERTIFICATE_ATTRIBUTE_NAME_ROLE).split(","));
+        return roles.contains(String.valueOf('"') + roleName) || roles.contains(roleName) || roles.contains(roleName + String.valueOf('"'));
     }
 
     /**
@@ -66,7 +94,7 @@ public class SmartContract implements ContractInterface {
      * @return the created patient
      */
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public Patient createPatient(final Context ctx,
+    public String createPatient(final Context ctx,
                                  final long nationalId,
                                  final String firstName,
                                  final String lastName,
@@ -84,90 +112,45 @@ public class SmartContract implements ContractInterface {
 
         Patient patient = new Patient(nationalId, firstName, lastName, Gender.valueOf(gender), new Date(dateOfBirth), insuranceNumber, new Date(insuranceDueDate));
         String patientJSON = genson.serialize(patient);
-        stub.putStringState(Long.toString(nationalId), patientJSON);
-        return patient;
+
+        String key = stub.createCompositeKey("Patient", Long.toString(nationalId)).toString();
+        stub.putStringState(key, patientJSON);
+
+        return String.format("Patient with national id: '%d' successfully added", nationalId);
     }
 
-    private boolean hasRole(final Context ctx, final String role) throws CertificateException, IOException {
-        ChaincodeStub stub = ctx.getStub();
-        final ClientIdentity identity = new ClientIdentity(stub);
-        return identity.assertAttributeValue(CERTIFICATE_ATTRIBUTE_NAME_ROLE, role);
-    }
-
-    private String getRole(final Context ctx) throws CertificateException, IOException {
-        ChaincodeStub stub = ctx.getStub();
-        final ClientIdentity identity = new ClientIdentity(stub);
-        return identity.getAttributeValue(CERTIFICATE_ATTRIBUTE_NAME_ROLE);
-    }
-
-    // TODO
-    public String getClientId() {
-        return "tempId";
-    }
-
-    // TODO
-    public String getClientDepartment() {
-        return "tempDepartment";
-    }
-
-    @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public void sign(final Context ctx, final long reportId) throws IOException, CertificateException {
-        // TODO create ReportExist
-
-        ChaincodeStub stub = ctx.getStub();
-        String reportState = stub.getStringState(Long.toString(reportId));
-        Report report = genson.deserialize(reportState, Report.class);
-
-        // TODO test this
-        switch (getRole(ctx)) {
-            case "doctor":
-                report.setDoctorSignature(getClientId());
-                report.setDoctorDepartment(getClientDepartment());
-                break;
-
-            case "headOfDepartment":
-                report.setHeadOfDepartmentSignature(getClientId());
-                break;
-
-            case "DOPMAM_medicalCommittee":
-                report.addMedicalCommitteeSignature(getClientId());
-                break;
-
-            case "DOPMAM_financialCommittee":
-                report.addFinancialCommitteeSignature(getClientId());
-                break;
-
-            default:
-                throw new CertificateException("un expected user role!");
-        }
-    }
-
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
     private boolean patientExists(final Context ctx, final long nationalId) {
         ChaincodeStub stub = ctx.getStub();
-        String patientJSON = stub.getStringState(Long.toString(nationalId));
+        String key = stub.createCompositeKey("Patient", Long.toString(nationalId)).toString();
+        String patientJSON = stub.getStringState(key);
         return Utils.isNotNullOrEmpty(patientJSON);
     }
 
-    /**
-     * Retrieves all patients from the ledger.
-     *
-     * @param ctx the transaction context
-     * @return array of patients found on the ledger
-     */
-    @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public String getAllPatients(final Context ctx) {
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public void deletePatient(final Context ctx, final long nationalId) {
         ChaincodeStub stub = ctx.getStub();
 
-        List<Patient> queryResults = new ArrayList<>();
-
-        QueryResultsIterator<KeyValue> results = stub.getStateByRange("", "");
-
-        for (KeyValue result : results) {
-            Patient patient = genson.deserialize(result.getStringValue(), Patient.class);
-            queryResults.add(patient);
-            System.out.println(patient.toString());
+        if (!patientExists(ctx, nationalId)) {
+            String message = String.format("Patient with national id: %d not exists", nationalId);
+            throw new ChaincodeException(message);
         }
 
-        return genson.serialize(queryResults);
+        String key = stub.createCompositeKey("Patient", Long.toString(nationalId)).toString();
+        stub.delState(key);
+    }
+
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    public Patient getPatient(final Context ctx, final long nationalId) {
+        ChaincodeStub stub = ctx.getStub();
+
+        if (!patientExists(ctx, nationalId)) {
+            String message = String.format("Patient with national id: %d not exists", nationalId);
+            throw new ChaincodeException(message);
+        }
+
+        String key = stub.createCompositeKey("Patient", Long.toString(nationalId)).toString();
+        String patientJSON = stub.getStringState(key);
+        return genson.deserialize(patientJSON, Patient.class);
     }
 }
