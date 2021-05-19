@@ -153,4 +153,19 @@ public class SmartContract implements ContractInterface {
         String patientJSON = stub.getStringState(key);
         return genson.deserialize(patientJSON, Patient.class);
     }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    private Long getNewReportId(final Context ctx) {
+        ChaincodeStub stub = ctx.getStub();
+        String key = stub.createCompositeKey("Report", "Next", "Id").toString();
+        String result = stub.getStringState(key);
+        long reportId;
+        try {
+            reportId = Long.parseLong(result) + 1;
+        } catch (Exception e) {
+            reportId = 1;
+        }
+        stub.putStringState(key, String.valueOf(reportId));
+        return reportId;
+    }
 }
