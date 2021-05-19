@@ -155,7 +155,7 @@ public class SmartContract implements ContractInterface {
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    private Long getNewReportId(final Context ctx) {
+    public Long getNewReportId(final Context ctx) {
         ChaincodeStub stub = ctx.getStub();
         String key = stub.createCompositeKey("Report", "Next", "Id").toString();
         String result = stub.getStringState(key);
@@ -170,8 +170,9 @@ public class SmartContract implements ContractInterface {
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public long createReport(
+    public void createReport(
             final Context ctx,
+            final long reportId,
             final long patientNationalId,
             final long reportDate,
             final String summary,
@@ -185,12 +186,23 @@ public class SmartContract implements ContractInterface {
             throw new ChaincodeException(message);
         }
 
-        long id = getNewReportId(ctx);
-        Report report = new Report(id, patientNationalId, new Date(reportDate), summary, diagnosis, procedure);
+        if (reportExists(ctx, reportId)) {
+            String message = String.format("Report with id: %d exists", reportId);
+            throw new ChaincodeException(message);
+        }
 
-        String key = stub.createCompositeKey("Report", String.valueOf(id)).toString();
+        Report report = new Report(reportId, patientNationalId, new Date(reportDate), summary, diagnosis, procedure);
+
+        String key = stub.createCompositeKey("Report", String.valueOf(reportId)).toString();
         stub.putStringState(key, String.valueOf(report));
-        return id;
+    }
+
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    private boolean reportExists(Context ctx, long reportId) {
+        ChaincodeStub stub = ctx.getStub();
+        String key = stub.createCompositeKey("Report", Long.toString(reportId)).toString();
+        String patientJSON = stub.getStringState(key);
+        return Utils.isNotNullOrEmpty(patientJSON);
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
