@@ -192,9 +192,10 @@ public class SmartContract implements ContractInterface {
         }
 
         Report report = new Report(reportId, patientNationalId, new Date(reportDate), summary, diagnosis, procedure);
+        String reportJSON = genson.serialize(report);
 
-        String key = stub.createCompositeKey("Report", String.valueOf(reportId)).toString();
-        stub.putStringState(key, String.valueOf(report));
+        String key = stub.createCompositeKey("Report", Long.toString(reportId)).toString();
+        stub.putStringState(key, reportJSON);
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
