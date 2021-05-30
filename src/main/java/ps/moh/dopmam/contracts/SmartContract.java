@@ -154,8 +154,7 @@ public class SmartContract implements ContractInterface {
         return genson.deserialize(patientJSON, Patient.class);
     }
 
-    @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public Long getNewReportId(final Context ctx) {
+    private Long getNewReportId(final Context ctx) {
         ChaincodeStub stub = ctx.getStub();
         String key = stub.createCompositeKey("Report", "Next", "Id").toString();
         String result = stub.getStringState(key);
@@ -170,9 +169,8 @@ public class SmartContract implements ContractInterface {
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public void createReport(
+    public long createReport(
             final Context ctx,
-            final long reportId,
             final long patientNationalId,
             final long reportDate,
             final String summary,
@@ -186,19 +184,30 @@ public class SmartContract implements ContractInterface {
             throw new ChaincodeException(message);
         }
 
-        if (reportExists(ctx, reportId)) {
-            String message = String.format("Report with id: %d exists", reportId);
-            throw new ChaincodeException(message);
-        }
-
+        long reportId = getNewReportId(ctx);
         Report report = new Report(reportId, patientNationalId, new Date(reportDate), summary, diagnosis, procedure);
         String reportJSON = genson.serialize(report);
 
         String key = stub.createCompositeKey("Report", Long.toString(reportId)).toString();
         stub.putStringState(key, reportJSON);
+
+        return reportId;
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
+    public Report getReport(final Context ctx, final long reportId) {
+        ChaincodeStub stub = ctx.getStub();
+
+        if (!reportExists(ctx, reportId)) {
+            String message = String.format("Report with id: %d not exists", reportId);
+            throw new ChaincodeException(message);
+        }
+
+        String key = stub.createCompositeKey("Report", Long.toString(reportId)).toString();
+        String reportJSON = stub.getStringState(key);
+        return genson.deserialize(reportJSON, Report.class);
+    }
+
     private boolean reportExists(Context ctx, long reportId) {
         ChaincodeStub stub = ctx.getStub();
         String key = stub.createCompositeKey("Report", Long.toString(reportId)).toString();
@@ -207,19 +216,105 @@ public class SmartContract implements ContractInterface {
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public String getAllReports(final Context ctx) {
+    public String getReports(final Context ctx) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
+        List<Report> reports = new ArrayList<>();
+        String client = getClientId(ctx);
+        String department = getDepartment(ctx);
+        String key = stub.createCompositeKey("Report").toString();
 
-        List<Report> queryResults = new ArrayList<>();
-
-        QueryResultsIterator<KeyValue> results = stub.getStateByRange("", "");
+        QueryResultsIterator<KeyValue> results = stub.getStateByRange(key, key);
 
         for (KeyValue result : results) {
             Report report = genson.deserialize(result.getStringValue(), Report.class);
-            queryResults.add(report);
-            System.out.println(report.toString());
+
+            if(hasRole(ctx, "doctor")){
+                if(report.getDoctorSignature().equals(client) && report.getDoctorDepartment().equals(department)) {
+                    reports.add(report);
+                }
+            } else if(hasRole(ctx, "head_department")) {
+                if(report.getDoctorDepartment().equals(department)) {
+                    reports.add(report);
+                }
+            } else if(
+                    hasRole(ctx, "hospital_manager") ||
+                    hasRole(ctx, "medical_committee_lead") ||
+                            hasRole(ctx, "medical_committee") ||
+                            hasRole(ctx, "financial_committee_lead") ||
+                            hasRole(ctx, "financial_committee")
+            ) {
+                reports.add(report);
+            }
         }
 
-        return genson.serialize(queryResults);
+        return genson.serialize(reports);
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public void signReport(
+            final Context ctx,
+            final long reportId,
+            final String country,
+            final String city,
+            final String hospital,
+            final String dept,
+            final long date,
+            final double coverag
+    ) {
+        ChaincodeStub stub = ctx.getStub();
+
+        if(!reportExists(ctx, reportId)) {
+            String message = String.format("Report with id: %d not exists", reportId);
+            throw new ChaincodeException(message);
+        }
+
+        try {
+            String key = stub.createCompositeKey("Report", Long.toString(reportId)).toString();
+            String reportJSON = stub.getStringState(key);
+            Report report = genson.deserialize(reportJSON, Report.class);
+            String client = getClientId(ctx);
+            String department = getDepartment(ctx);
+
+            if(report.getDoctorSignature() == null && hasRole(ctx, "doctor")){
+                report.setDoctorSignature(client);
+                report.setDoctorDepartment(department);
+
+                reportJSON = genson.serialize(report);
+                stub.putStringState(key, reportJSON);
+            } else if(report.getHeadOfDepartmentSignature() == null && report.getDoctorDepartment().equals(department) && hasRole(ctx, "head_department")) {
+                report.setHeadOfDepartmentSignature(client);
+
+                reportJSON = genson.serialize(report);
+                stub.putStringState(key, reportJSON);
+            } else if(report.getHospitalManagerSignature() == null && hasRole(ctx,"hospital_manager")) {
+                report.setHospitalManagerSignature(client);
+
+                reportJSON = genson.serialize(report);
+                stub.putStringState(key, reportJSON);
+            } else if(report.getMedicalCommitteeSignatures().size() == 0 && hasRole(ctx, "medical_committee_lead")) {
+                report.addMedicalCommitteeSignature(client);
+                report.updateTransferDetails(country, city, hospital, dept, new Date(date));
+
+                reportJSON = genson.serialize(report);
+                stub.putStringState(key, reportJSON);
+            } else if(report.getMedicalCommitteeSignatures().size() > 1 && hasRole(ctx, "medical_committee")) {
+                report.addMedicalCommitteeSignature(client);
+
+                reportJSON = genson.serialize(report);
+                stub.putStringState(key, reportJSON);
+            } else if(report.getFinancialCommitteeSignatures().size() == 0 && hasRole(ctx, "financial_committee_lead")) {
+                report.addFinancialCommitteeSignature(client);
+                report.updateTransferCoverage(coverag);
+
+                reportJSON = genson.serialize(report);
+                stub.putStringState(key, reportJSON);
+            } else if(report.getFinancialCommitteeSignatures().size() > 1 && hasRole(ctx, "financial_committee")) {
+                report.addFinancialCommitteeSignature(client);
+
+                reportJSON = genson.serialize(report);
+                stub.putStringState(key, reportJSON);
+            }
+        } catch (Exception e) {
+        }
     }
 }
