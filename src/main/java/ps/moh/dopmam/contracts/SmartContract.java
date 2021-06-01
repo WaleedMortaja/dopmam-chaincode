@@ -248,7 +248,7 @@ public class SmartContract implements ContractInterface {
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public void signReport(
+    public int signReport(
             final Context ctx,
             final long reportId,
             final String country,
@@ -272,46 +272,50 @@ public class SmartContract implements ContractInterface {
             String client = getClientId(ctx);
             String department = getDepartment(ctx);
 
-            if(report.getDoctorSignature() == null && hasRole(ctx, "doctor")){
-                report.setDoctorSignature(client);
-                report.setDoctorDepartment(department);
+            return report.getMedicalCommitteeSignatures().size();
 
-                reportJSON = genson.serialize(report);
-                stub.putStringState(key, reportJSON);
-            } else if(report.getHeadOfDepartmentSignature() == null && report.getDoctorDepartment().equals(department) && hasRole(ctx, "head_department")) {
-                report.setHeadOfDepartmentSignature(client);
 
-                reportJSON = genson.serialize(report);
-                stub.putStringState(key, reportJSON);
-            } else if(report.getHospitalManagerSignature() == null && hasRole(ctx,"hospital_manager")) {
-                report.setHospitalManagerSignature(client);
-
-                reportJSON = genson.serialize(report);
-                stub.putStringState(key, reportJSON);
-            } else if(report.getMedicalCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_medical_lead")) {
-                report.addMedicalCommitteeSignature(client);
-                report.updateTransferDetails(country, city, hospital, dept, new Date(date));
-
-                reportJSON = genson.serialize(report);
-                stub.putStringState(key, reportJSON);
-            } else if(report.getMedicalCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_medical")) {
-                report.addMedicalCommitteeSignature(client);
-
-                reportJSON = genson.serialize(report);
-                stub.putStringState(key, reportJSON);
-            } else if(report.getFinancialCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_financial_lead")) {
-                report.addFinancialCommitteeSignature(client);
-                report.updateTransferCoverage(coverag);
-
-                reportJSON = genson.serialize(report);
-                stub.putStringState(key, reportJSON);
-            } else if(report.getFinancialCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_financial")) {
-                report.addFinancialCommitteeSignature(client);
-
-                reportJSON = genson.serialize(report);
-                stub.putStringState(key, reportJSON);
-            }
+//            if(report.getDoctorSignature() == null && hasRole(ctx, "doctor")){
+//                report.setDoctorSignature(client);
+//                report.setDoctorDepartment(department);
+//
+//                reportJSON = genson.serialize(report);
+//                stub.putStringState(key, reportJSON);
+//            } else if(report.getHeadOfDepartmentSignature() == null && report.getDoctorDepartment().equals(department) && hasRole(ctx, "head_department")) {
+//                report.setHeadOfDepartmentSignature(client);
+//
+//                reportJSON = genson.serialize(report);
+//                stub.putStringState(key, reportJSON);
+//            } else if(report.getHospitalManagerSignature() == null && hasRole(ctx,"hospital_manager")) {
+//                report.setHospitalManagerSignature(client);
+//
+//                reportJSON = genson.serialize(report);
+//                stub.putStringState(key, reportJSON);
+//            } else if(report.getMedicalCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_medical_lead")) {
+//                report.addMedicalCommitteeSignature(client);
+//                report.updateTransferDetails(country, city, hospital, dept, new Date(date));
+//
+//                reportJSON = genson.serialize(report);
+//                stub.putStringState(key, reportJSON);
+//            } else if(report.getMedicalCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_medical")) {
+//                report.addMedicalCommitteeSignature(client);
+//
+//                reportJSON = genson.serialize(report);
+//                stub.putStringState(key, reportJSON);
+//            } else if(report.getFinancialCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_financial_lead")) {
+//                report.addFinancialCommitteeSignature(client);
+//                report.updateTransferCoverage(coverag);
+//
+//                reportJSON = genson.serialize(report);
+//                stub.putStringState(key, reportJSON);
+//            } else if(report.getFinancialCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_financial")) {
+//                report.addFinancialCommitteeSignature(client);
+//
+//                reportJSON = genson.serialize(report);
+//                stub.putStringState(key, reportJSON);
+//            }
         } catch (Exception e) {
+            return -10;
         }
     }
 }
