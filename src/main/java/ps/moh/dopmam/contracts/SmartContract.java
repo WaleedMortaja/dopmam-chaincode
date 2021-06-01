@@ -221,32 +221,29 @@ public class SmartContract implements ContractInterface {
         List<Report> reports = new ArrayList<>();
         String client = getClientId(ctx);
         String department = getDepartment(ctx);
-        String key = stub.createCompositeKey("Report").toString();
 
+        String key = "Report";
         QueryResultsIterator<KeyValue> results = stub.getStateByRange(key, key);
 
         for (KeyValue result : results) {
             Report report = genson.deserialize(result.getStringValue(), Report.class);
 
-            if(hasRole(ctx, "doctor")){
-                if(report.getDoctorSignature().equals(client) && report.getDoctorDepartment().equals(department)) {
-                    reports.add(report);
-                }
-            } else if(hasRole(ctx, "head_department")) {
-                if(report.getDoctorDepartment().equals(department)) {
-                    reports.add(report);
-                }
-            } else if(
-                    hasRole(ctx, "hospital_manager") ||
-                    hasRole(ctx, "medical_committee_lead") ||
-                            hasRole(ctx, "medical_committee") ||
-                            hasRole(ctx, "financial_committee_lead") ||
-                            hasRole(ctx, "financial_committee")
-            ) {
+            if(hasRole(ctx, "doctor") && report.getDoctorSignature().equals(client) && report.getDoctorDepartment().equals(department)){
+                reports.add(report);
+            } else if(hasRole(ctx, "head_department") && report.getDoctorDepartment().equals(department)) {
+                reports.add(report);
+            } else if(hasRole(ctx, "medical_committee_lead") && report.getMedicalCommitteeSignatures().size() == 0) {
+                reports.add(report);
+            } else if(hasRole(ctx, "financial_committee_lead") && report.getFinancialCommitteeSignatures().size() == 0) {
+                reports.add(report);
+            } else if(hasRole(ctx, "medical_committee") && report.getMedicalCommitteeSignatures().size() > 0) {
+                reports.add(report);
+            } else if(hasRole(ctx, "financial_committee") && report.getFinancialCommitteeSignatures().size() > 0) {
+                reports.add(report);
+            } else if(hasRole(ctx, "hospital_manager")) {
                 reports.add(report);
             }
         }
-
         return genson.serialize(reports);
     }
 
@@ -297,7 +294,7 @@ public class SmartContract implements ContractInterface {
 
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
-            } else if(report.getMedicalCommitteeSignatures().size() > 1 && hasRole(ctx, "medical_committee")) {
+            } else if(report.getMedicalCommitteeSignatures().size() > 0 && hasRole(ctx, "medical_committee")) {
                 report.addMedicalCommitteeSignature(client);
 
                 reportJSON = genson.serialize(report);
@@ -308,7 +305,7 @@ public class SmartContract implements ContractInterface {
 
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
-            } else if(report.getFinancialCommitteeSignatures().size() > 1 && hasRole(ctx, "financial_committee")) {
+            } else if(report.getFinancialCommitteeSignatures().size() > 0 && hasRole(ctx, "financial_committee")) {
                 report.addFinancialCommitteeSignature(client);
 
                 reportJSON = genson.serialize(report);
