@@ -232,13 +232,13 @@ public class SmartContract implements ContractInterface {
                 reports.add(report);
             } else if(hasRole(ctx, "head_department") && report.getDoctorDepartment().equals(department)) {
                 reports.add(report);
-            } else if(hasRole(ctx, "medical_committee_lead") && report.getMedicalCommitteeSignatures().size() == 0) {
+            } else if(hasRole(ctx, "dopmam_medical_lead") && report.getMedicalCommitteeSignatures().size() == 0) {
                 reports.add(report);
-            } else if(hasRole(ctx, "financial_committee_lead") && report.getFinancialCommitteeSignatures().size() == 0) {
+            } else if(hasRole(ctx, "dopmam_financial_lead") && report.getFinancialCommitteeSignatures().size() == 0) {
                 reports.add(report);
-            } else if(hasRole(ctx, "medical_committee") && report.getMedicalCommitteeSignatures().size() > 0) {
+            } else if(hasRole(ctx, "dopmam_medical") && report.getMedicalCommitteeSignatures().size() > 0) {
                 reports.add(report);
-            } else if(hasRole(ctx, "financial_committee") && report.getFinancialCommitteeSignatures().size() > 0) {
+            } else if(hasRole(ctx, "dopmam_financial") && report.getFinancialCommitteeSignatures().size() > 0) {
                 reports.add(report);
             } else if(hasRole(ctx, "hospital_manager")) {
                 reports.add(report);
@@ -288,24 +288,24 @@ public class SmartContract implements ContractInterface {
 
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
-            } else if(report.getMedicalCommitteeSignatures().size() == 0 && hasRole(ctx, "medical_committee_lead")) {
+            } else if(report.getMedicalCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_medical_lead")) {
                 report.addMedicalCommitteeSignature(client);
                 report.updateTransferDetails(country, city, hospital, dept, new Date(date));
 
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
-            } else if(report.getMedicalCommitteeSignatures().size() > 0 && hasRole(ctx, "medical_committee")) {
+            } else if(report.getMedicalCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_medical")) {
                 report.addMedicalCommitteeSignature(client);
 
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
-            } else if(report.getFinancialCommitteeSignatures().size() == 0 && hasRole(ctx, "financial_committee_lead")) {
+            } else if(report.getFinancialCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_financial_lead")) {
                 report.addFinancialCommitteeSignature(client);
                 report.updateTransferCoverage(coverag);
 
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
-            } else if(report.getFinancialCommitteeSignatures().size() > 0 && hasRole(ctx, "financial_committee")) {
+            } else if(report.getFinancialCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_financial")) {
                 report.addFinancialCommitteeSignature(client);
 
                 reportJSON = genson.serialize(report);
