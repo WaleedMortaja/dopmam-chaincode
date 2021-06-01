@@ -248,7 +248,7 @@ public class SmartContract implements ContractInterface {
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public int signReport(
+    public boolean signReport(
             final Context ctx,
             final long reportId,
             final String country,
@@ -272,7 +272,7 @@ public class SmartContract implements ContractInterface {
             String client = getClientId(ctx);
             String department = getDepartment(ctx);
 
-            return report.getMedicalCommitteeSignatures().size();
+            return  hasRole(ctx, "dopmam_medical_lead");
 
 
 //            if(report.getDoctorSignature() == null && hasRole(ctx, "doctor")){
@@ -315,7 +315,7 @@ public class SmartContract implements ContractInterface {
 //                stub.putStringState(key, reportJSON);
 //            }
         } catch (Exception e) {
-            return -10;
+            throw new ChaincodeException(e);
         }
     }
 }
