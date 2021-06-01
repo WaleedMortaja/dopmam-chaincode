@@ -77,7 +77,7 @@ public class SmartContract implements ContractInterface {
         ChaincodeStub stub = ctx.getStub();
         final ClientIdentity identity = new ClientIdentity(stub);
         List<String> roles = Arrays.asList(identity.getAttributeValue(CERTIFICATE_ATTRIBUTE_NAME_ROLE).split(","));
-        return roles.contains(String.valueOf('"') + roleName) || roles.contains(roleName) || roles.contains(roleName + String.valueOf('"'));
+        return roles.contains(String.valueOf('"') + roleName) || roles.contains(roleName) || roles.contains(roleName + String.valueOf('"')) || roles.contains(String.valueOf('"') + roleName + String.valueOf('"'));
     }
 
     /**
