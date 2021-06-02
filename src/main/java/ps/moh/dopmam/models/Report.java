@@ -186,6 +186,7 @@ public class Report {
     }
 
     public void addMedicalCommitteeSignature(String medicalCommitteeSignature) {
+        this.medicalCommitteeSignatures.add("fsdf");
         this.medicalCommitteeSignatures.add(medicalCommitteeSignature);
     }
 
