@@ -248,7 +248,7 @@ public class SmartContract implements ContractInterface {
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public boolean signReport(
+    public void signReport(
             final Context ctx,
             final long reportId,
             final String country,
@@ -272,26 +272,25 @@ public class SmartContract implements ContractInterface {
             String client = getClientId(ctx);
             String department = getDepartment(ctx);
 
-            return  hasRole(ctx, "dopmam_medical_lead");
+            if(report.getDoctorSignature() == null && hasRole(ctx, "doctor")){
+                report.setDoctorSignature(client);
+                report.setDoctorDepartment(department);
 
+                reportJSON = genson.serialize(report);
+                stub.putStringState(key, reportJSON);
+            } else if(report.getHeadOfDepartmentSignature() == null && report.getDoctorDepartment().equals(department) && hasRole(ctx, "head_department")) {
+                report.setHeadOfDepartmentSignature(client);
 
-//            if(report.getDoctorSignature() == null && hasRole(ctx, "doctor")){
-//                report.setDoctorSignature(client);
-//                report.setDoctorDepartment(department);
+                reportJSON = genson.serialize(report);
+                stub.putStringState(key, reportJSON);
+            } else if(report.getHospitalManagerSignature() == null && hasRole(ctx,"hospital_manager")) {
+                report.setHospitalManagerSignature(client);
+
+                reportJSON = genson.serialize(report);
+                stub.putStringState(key, reportJSON);
+            }
 //
-//                reportJSON = genson.serialize(report);
-//                stub.putStringState(key, reportJSON);
-//            } else if(report.getHeadOfDepartmentSignature() == null && report.getDoctorDepartment().equals(department) && hasRole(ctx, "head_department")) {
-//                report.setHeadOfDepartmentSignature(client);
-//
-//                reportJSON = genson.serialize(report);
-//                stub.putStringState(key, reportJSON);
-//            } else if(report.getHospitalManagerSignature() == null && hasRole(ctx,"hospital_manager")) {
-//                report.setHospitalManagerSignature(client);
-//
-//                reportJSON = genson.serialize(report);
-//                stub.putStringState(key, reportJSON);
-//            } else if(report.getMedicalCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_medical_lead")) {
+//            else if(report.getMedicalCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_medical_lead")) {
 //                report.addMedicalCommitteeSignature(client);
 //                report.updateTransferDetails(country, city, hospital, dept, new Date(date));
 //
