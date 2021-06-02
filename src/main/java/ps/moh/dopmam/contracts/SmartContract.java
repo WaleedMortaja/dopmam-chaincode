@@ -218,33 +218,32 @@ public class SmartContract implements ContractInterface {
     @Transaction(intent = Transaction.TYPE.EVALUATE)
     public String getReports(final Context ctx) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
-        List<String> reports = new ArrayList<>();
+        List<Report> reports = new ArrayList<>();
         String client = getClientId(ctx);
         String department = getDepartment(ctx);
 
-        String key = "";
         QueryResultsIterator<KeyValue> results = stub.getStateByPartialCompositeKey("Report");
 
         for (KeyValue result : results) {
-            //Report report = genson.deserialize(result.getStringValue(), Report.class);
+            Report report = genson.deserialize(result.getStringValue(), Report.class);
 
-//            if(hasRole(ctx, "doctor") && report.getDoctorSignature().equals(client) && report.getDoctorDepartment().equals(department)){
-//                reports.add(report);
-//            } else if(hasRole(ctx, "head_department") && report.getDoctorDepartment().equals(department)) {
-//                reports.add(report);
-//            } else if(hasRole(ctx, "dopmam_medical_lead") && report.getMedicalCommitteeSignatures().size() == 0) {
-//                reports.add(report);
-//            } else if(hasRole(ctx, "dopmam_financial_lead") && report.getFinancialCommitteeSignatures().size() == 0) {
-//                reports.add(report);
-//            } else if(hasRole(ctx, "dopmam_medical") && report.getMedicalCommitteeSignatures().size() > 0) {
-//                reports.add(report);
-//            } else if(hasRole(ctx, "dopmam_financial") && report.getFinancialCommitteeSignatures().size() > 0) {
-//                reports.add(report);
-//            } else if(hasRole(ctx, "hospital_manager")) {
-//                reports.add(report);
-//            }
-            reports.add(result.getStringValue());
+            if(hasRole(ctx, "doctor") && report.getDoctorSignature().equals(client) && report.getDoctorDepartment().equals(department)){
+                reports.add(report);
+            } else if(hasRole(ctx, "head_department") && report.getDoctorDepartment().equals(department)) {
+                reports.add(report);
+            } else if(hasRole(ctx, "dopmam_medical_lead") && report.getMedicalCommitteeSignatures().size() == 0) {
+                reports.add(report);
+            } else if(hasRole(ctx, "dopmam_financial_lead") && report.getFinancialCommitteeSignatures().size() == 0) {
+                reports.add(report);
+            } else if(hasRole(ctx, "dopmam_medical") && report.getMedicalCommitteeSignatures().size() > 0) {
+                reports.add(report);
+            } else if(hasRole(ctx, "dopmam_financial") && report.getFinancialCommitteeSignatures().size() > 0) {
+                reports.add(report);
+            } else if(hasRole(ctx, "hospital_manager")) {
+                reports.add(report);
+            }
         }
+
         return genson.serialize(reports);
     }
 
