@@ -218,15 +218,15 @@ public class SmartContract implements ContractInterface {
     @Transaction(intent = Transaction.TYPE.EVALUATE)
     public String getReports(final Context ctx) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
-        List<Report> reports = new ArrayList<>();
+        List<String> reports = new ArrayList<>();
         String client = getClientId(ctx);
         String department = getDepartment(ctx);
 
-        String key = "Report";
+        String key = "";
         QueryResultsIterator<KeyValue> results = stub.getStateByRange(key, key);
 
         for (KeyValue result : results) {
-            Report report = genson.deserialize(result.getStringValue(), Report.class);
+            //Report report = genson.deserialize(result.getStringValue(), Report.class);
 
 //            if(hasRole(ctx, "doctor") && report.getDoctorSignature().equals(client) && report.getDoctorDepartment().equals(department)){
 //                reports.add(report);
@@ -243,7 +243,7 @@ public class SmartContract implements ContractInterface {
 //            } else if(hasRole(ctx, "hospital_manager")) {
 //                reports.add(report);
 //            }
-            reports.add(report);
+            reports.add(result.getStringValue());
         }
         return genson.serialize(reports);
     }
