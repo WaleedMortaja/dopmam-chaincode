@@ -289,6 +289,10 @@ public class SmartContract implements ContractInterface {
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             }
+
+            report.addMedicalCommitteeSignature(client);
+            reportJSON = genson.serialize(report);
+            stub.putStringState(key, reportJSON);
 //
 //            else if(report.getMedicalCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_medical_lead")) {
 //                report.addMedicalCommitteeSignature(client);
