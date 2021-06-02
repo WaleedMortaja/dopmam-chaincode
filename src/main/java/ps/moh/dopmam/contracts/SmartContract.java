@@ -223,7 +223,7 @@ public class SmartContract implements ContractInterface {
         String department = getDepartment(ctx);
 
         String key = "";
-        QueryResultsIterator<KeyValue> results = stub.getStateByRange(key, key);
+        QueryResultsIterator<KeyValue> results = stub.getStateByPartialCompositeKey("Report");
 
         for (KeyValue result : results) {
             //Report report = genson.deserialize(result.getStringValue(), Report.class);
