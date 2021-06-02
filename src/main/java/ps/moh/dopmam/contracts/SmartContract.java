@@ -176,7 +176,7 @@ public class SmartContract implements ContractInterface {
             final String summary,
             final String diagnosis,
             final String procedure
-    ) {
+    ) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
 
         if (!patientExists(ctx, patientNationalId)) {
@@ -184,8 +184,21 @@ public class SmartContract implements ContractInterface {
             throw new ChaincodeException(message);
         }
 
+        if(!hasRole(ctx, "doctor")) {
+            String message = String.format("Unauthorized");
+            throw new ChaincodeException(message);
+        }
+
         long reportId = getNewReportId(ctx);
+
         Report report = new Report(reportId, patientNationalId, new Date(reportDate), summary, diagnosis, procedure);
+
+        String client = getClientId(ctx);
+        String department = getDepartment(ctx);
+
+        report.setDoctorSignature(client);
+        report.setDoctorDepartment(department);
+
         String reportJSON = genson.serialize(report);
 
         String key = stub.createCompositeKey("Report", Long.toString(reportId)).toString();
