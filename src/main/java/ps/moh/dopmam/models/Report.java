@@ -59,10 +59,10 @@ public class Report {
     private String hospitalManagerSignature;
 
     @Property()
-    private final List<String> medicalCommitteeSignatures;
+    private List<String> medicalCommitteeSignatures;
 
     @Property()
-    private final List<String> financialCommitteeSignatures;
+    private List<String> financialCommitteeSignatures;
 
     public Report(@JsonProperty("reportId") final long reportId,
                   @JsonProperty("patientNationalId") final long patientNationalId,
