@@ -282,6 +282,7 @@ public class SmartContract implements ContractInterface {
 
             for (KeyValue result : results) {
                 Report report = genson.deserialize(result.getStringValue(), Report.class);
+                System.out.println("Id: " + report.getReportId());
                 if(canViewReport(ctx, report.getReportId())){
                     reports.add(report);
                 }
