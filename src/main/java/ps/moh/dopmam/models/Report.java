@@ -5,6 +5,7 @@ import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -59,10 +60,10 @@ public class Report {
     private String hospitalManagerSignature;
 
     @Property()
-    private List<String> medicalCommitteeSignatures;
+    private Collection<String> medicalCommitteeSignatures;
 
     @Property()
-    private List<String> financialCommitteeSignatures;
+    private Collection<String> financialCommitteeSignatures;
 
     public Report(@JsonProperty("reportId") final long reportId,
                   @JsonProperty("patientNationalId") final long patientNationalId,
