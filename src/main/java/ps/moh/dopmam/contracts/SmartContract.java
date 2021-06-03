@@ -337,7 +337,9 @@ public class SmartContract implements ContractInterface {
                 stub.putStringState(key, reportJSON);
             } else if(report.getMedicalCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_medical_lead")) {
                 List<String> signatures = report.getMedicalCommitteeSignatures();
-                signatures.add(client);
+                if(!signatures.contains(client)) {
+                    signatures.add(client);
+                }
                 report.setMedicalCommitteeSignatures(signatures);
                 report.setTransferToCountry(country);
                 report.setTransferToCity(city);
@@ -348,7 +350,9 @@ public class SmartContract implements ContractInterface {
                 stub.putStringState(key, reportJSON);
             } else if(report.getMedicalCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_medical")) {
                 List<String> signatures = report.getMedicalCommitteeSignatures();
-                signatures.add(client);
+                if(!signatures.contains(client)) {
+                    signatures.add(client);
+                }
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if(report.getFinancialCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_financial_lead")) {
