@@ -277,7 +277,7 @@ public class SmartContract implements ContractInterface {
         List<Report> reports = new ArrayList<>();
 
         try {
-            String key = stub.createCompositeKey("Report", "1").toString();
+            String key = stub.createCompositeKey("Report", "4").toString();
             QueryResultsIterator<KeyValue> results = stub.getStateByPartialCompositeKey(key);
 
             for (KeyValue result : results) {
