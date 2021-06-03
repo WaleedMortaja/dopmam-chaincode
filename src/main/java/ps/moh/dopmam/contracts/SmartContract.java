@@ -90,15 +90,15 @@ public class SmartContract implements ContractInterface {
                 return true;
             } else if(hasRole(ctx, "head_department") && report.getDoctorDepartment().equals(department)) {
                 return true;
-            } else if(hasRole(ctx, "dopmam_medical_lead") && report.getMedicalCommitteeSignatures().size() == 0) {
+            } else if(hasRole(ctx, "dopmam_medical_lead") && report.getHospitalManagerSignature() != null) {
                 return true;
-            } else if(hasRole(ctx, "dopmam_financial_lead") && report.getFinancialCommitteeSignatures().size() == 0) {
+            } else if(hasRole(ctx, "dopmam_financial_lead") && report.getMedicalCommitteeSignatures().size() == 4) {
                 return true;
             } else if(hasRole(ctx, "dopmam_medical") && report.getMedicalCommitteeSignatures().size() > 0) {
                 return true;
             } else if(hasRole(ctx, "dopmam_financial") && report.getFinancialCommitteeSignatures().size() > 0) {
                 return true;
-            } else if(hasRole(ctx, "hospital_manager")) {
+            } else if(hasRole(ctx, "hospital_manager") && report.getHospitalManagerSignature() != null) {
                 return true;
             }
             return false;
