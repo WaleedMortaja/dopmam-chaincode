@@ -216,8 +216,15 @@ public class SmartContract implements ContractInterface {
             throw new ChaincodeException(message);
         }
 
+        // TODO: check for authorization as in get reports.
+
         String key = stub.createCompositeKey("Report", Long.toString(reportId)).toString();
         String reportJSON = stub.getStringState(key);
+
+        System.out.println("------------------------------------------------");
+        System.out.println("reportJson: " + reportJSON);
+        System.out.println("------------------------------------------------");
+
         return genson.deserialize(reportJSON, Report.class);
     }
 
