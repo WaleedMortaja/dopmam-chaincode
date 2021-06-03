@@ -198,9 +198,9 @@ public class SmartContract implements ContractInterface {
 
         //List<String> names = new ArrayList<>();
         report.addMedicalCommitteeSignature("Shlomo");
-        report.addMedicalCommitteeSignature(("Ahmed");
-        report.addMedicalCommitteeSignature(("Waleed");
-        report.addMedicalCommitteeSignature(("Jack");
+        report.addMedicalCommitteeSignature("Ahmed");
+        report.addMedicalCommitteeSignature("Waleed");
+        report.addMedicalCommitteeSignature("Jack");
 
         //report.setMedicalCommitteeSignatures(names);
 
