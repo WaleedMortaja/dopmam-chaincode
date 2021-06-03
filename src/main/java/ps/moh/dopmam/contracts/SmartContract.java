@@ -230,7 +230,7 @@ public class SmartContract implements ContractInterface {
         Report r = genson.deserialize(reportJSON, Report.class);
 
         System.out.println("------------------------------------------------");
-        System.out.println("report: " + Arrays.toString(r.getMedicalCommitteeSignatures().toArray()));
+        System.out.println("report: " + r.getMedicalCommitteeSignatures().size());
         System.out.println("------------------------------------------------");
 
         return r;
