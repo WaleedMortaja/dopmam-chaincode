@@ -225,7 +225,13 @@ public class SmartContract implements ContractInterface {
         System.out.println("reportJson: " + reportJSON);
         System.out.println("------------------------------------------------");
 
-        return genson.deserialize(reportJSON, Report.class);
+        Report r = genson.deserialize(reportJSON, Report.class);
+
+        System.out.println("------------------------------------------------");
+        System.out.println("report: " + r);
+        System.out.println("------------------------------------------------");
+
+        return r;
     }
 
     private boolean reportExists(Context ctx, long reportId) {
