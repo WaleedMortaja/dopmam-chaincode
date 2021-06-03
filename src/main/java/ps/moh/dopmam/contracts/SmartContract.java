@@ -1,6 +1,7 @@
 package ps.moh.dopmam.contracts;
 
 import com.owlike.genson.Genson;
+import com.owlike.genson.GensonBuilder;
 import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.contract.ContractInterface;
@@ -42,7 +43,8 @@ import java.util.List;
 @Default
 public class SmartContract implements ContractInterface {
     private static final String CERTIFICATE_ATTRIBUTE_NAME_ROLE = "roles";
-    private final Genson genson = new Genson();
+    GensonBuilder builder = new GensonBuilder().include("medicalCommitteeSignatures", List.class);
+    private final Genson genson = builder.create();
 
     /**
      * Initialize the ledger.
