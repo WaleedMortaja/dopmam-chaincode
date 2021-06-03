@@ -275,11 +275,8 @@ public class SmartContract implements ContractInterface {
     public String getReports(final Context ctx) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
         List<Report> reports = new ArrayList<>();
-        String client = getClientId(ctx);
-        String department = getDepartment(ctx);
 
-        String key = "Report";
-        QueryResultsIterator<KeyValue> results = stub.getStateByRange(key, key);
+        QueryResultsIterator<KeyValue> results = stub.getStateByPartialCompositeKey("Report");
 
         for (KeyValue result : results) {
             Report report = genson.deserialize(result.getStringValue(), Report.class);
