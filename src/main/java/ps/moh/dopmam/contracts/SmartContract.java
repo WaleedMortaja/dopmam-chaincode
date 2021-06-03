@@ -53,7 +53,6 @@ public class SmartContract implements ContractInterface {
     public void initLedger(final Context ctx) {
     }
 
-    @Transaction(intent = Transaction.TYPE.EVALUATE)
     private String getDepartment(final Context ctx) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
         final ClientIdentity identity = new ClientIdentity(stub);
@@ -63,7 +62,6 @@ public class SmartContract implements ContractInterface {
         return departmentOU.trim().substring(3);
     }
 
-    @Transaction(intent = Transaction.TYPE.EVALUATE)
     private String getClientId(final Context ctx) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
         final ClientIdentity identity = new ClientIdentity(stub);
@@ -72,12 +70,41 @@ public class SmartContract implements ContractInterface {
         return CN.trim().substring(3);
     }
 
-    @Transaction(intent = Transaction.TYPE.EVALUATE)
     private boolean hasRole(final Context ctx, String roleName) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
         final ClientIdentity identity = new ClientIdentity(stub);
         List<String> roles = Arrays.asList(identity.getAttributeValue(CERTIFICATE_ATTRIBUTE_NAME_ROLE).split(","));
         return roles.contains(String.valueOf('"') + roleName) || roles.contains(roleName) || roles.contains(roleName + String.valueOf('"')) || roles.contains(String.valueOf('"') + roleName + String.valueOf('"'));
+    }
+
+    private boolean canViewReport(final  Context ctx, long reportId) {
+        ChaincodeStub stub = ctx.getStub();
+        try {
+            String key = stub.createCompositeKey("Report", Long.toString(reportId)).toString();
+            String reportJSON = stub.getStringState(key);
+            Report report = genson.deserialize(reportJSON, Report.class);
+            String client = getClientId(ctx);
+            String department = getDepartment(ctx);
+
+            if(hasRole(ctx, "doctor") && report.getDoctorSignature().equals(client) && report.getDoctorDepartment().equals(department)){
+                return true;
+            } else if(hasRole(ctx, "head_department") && report.getDoctorDepartment().equals(department)) {
+                return true;
+            } else if(hasRole(ctx, "dopmam_medical_lead") && report.getMedicalCommitteeSignatures().size() == 0) {
+                return true;
+            } else if(hasRole(ctx, "dopmam_financial_lead") && report.getFinancialCommitteeSignatures().size() == 0) {
+                return true;
+            } else if(hasRole(ctx, "dopmam_medical") && report.getMedicalCommitteeSignatures().size() > 0) {
+                return true;
+            } else if(hasRole(ctx, "dopmam_financial") && report.getFinancialCommitteeSignatures().size() > 0) {
+                return true;
+            } else if(hasRole(ctx, "hospital_manager")) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return  false;
+        }
     }
 
     /**
@@ -101,12 +128,17 @@ public class SmartContract implements ContractInterface {
                                  final String gender,
                                  final long dateOfBirth,
                                  final long insuranceNumber,
-                                 final long insuranceDueDate) {
+                                 final long insuranceDueDate) throws CertificateException, IOException {
 
         ChaincodeStub stub = ctx.getStub();
 
         if (patientExists(ctx, nationalId)) {
             String message = String.format("Patient with national id: '%d' already exists", nationalId);
+            throw new ChaincodeException(message);
+        }
+
+        if(!hasRole(ctx, "doctor")){
+            String message = String.format("Unauthorized access");
             throw new ChaincodeException(message);
         }
 
@@ -128,11 +160,17 @@ public class SmartContract implements ContractInterface {
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public void deletePatient(final Context ctx, final long nationalId) {
+    public void deletePatient(final Context ctx, final long nationalId) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
 
         if (!patientExists(ctx, nationalId)) {
             String message = String.format("Patient with national id: %d not exists", nationalId);
+            throw new ChaincodeException(message);
+        }
+
+
+        if(!hasRole(ctx, "doctor")){
+            String message = String.format("Unauthorized access");
             throw new ChaincodeException(message);
         }
 
@@ -184,8 +222,8 @@ public class SmartContract implements ContractInterface {
             throw new ChaincodeException(message);
         }
 
-        if(!hasRole(ctx, "doctor")) {
-            String message = String.format("Unauthorized");
+        if(!hasRole(ctx, "doctor")){
+            String message = String.format("Unauthorized access");
             throw new ChaincodeException(message);
         }
 
@@ -216,6 +254,11 @@ public class SmartContract implements ContractInterface {
             throw new ChaincodeException(message);
         }
 
+        if(!canViewReport(ctx, reportId)){
+            String message = String.format("Unauthorized access");
+            throw new ChaincodeException(message);
+        }
+
         String key = stub.createCompositeKey("Report", Long.toString(reportId)).toString();
         String reportJSON = stub.getStringState(key);
         return genson.deserialize(reportJSON, Report.class);
@@ -240,20 +283,7 @@ public class SmartContract implements ContractInterface {
 
         for (KeyValue result : results) {
             Report report = genson.deserialize(result.getStringValue(), Report.class);
-
-            if(hasRole(ctx, "doctor") && report.getDoctorSignature().equals(client) && report.getDoctorDepartment().equals(department)){
-                reports.add(report);
-            } else if(hasRole(ctx, "head_department") && report.getDoctorDepartment().equals(department)) {
-                reports.add(report);
-            } else if(hasRole(ctx, "dopmam_medical_lead") && report.getMedicalCommitteeSignatures().size() == 0) {
-                reports.add(report);
-            } else if(hasRole(ctx, "dopmam_financial_lead") && report.getFinancialCommitteeSignatures().size() == 0) {
-                reports.add(report);
-            } else if(hasRole(ctx, "dopmam_medical") && report.getMedicalCommitteeSignatures().size() > 0) {
-                reports.add(report);
-            } else if(hasRole(ctx, "dopmam_financial") && report.getFinancialCommitteeSignatures().size() > 0) {
-                reports.add(report);
-            } else if(hasRole(ctx, "hospital_manager")) {
+            if(canViewReport(ctx, report.getReportId())){
                 reports.add(report);
             }
         }
@@ -278,6 +308,11 @@ public class SmartContract implements ContractInterface {
             throw new ChaincodeException(message);
         }
 
+        if(!canViewReport(ctx, reportId)){
+            String message = String.format("Unauthorized access");
+            throw new ChaincodeException(message);
+        }
+
         try {
             String key = stub.createCompositeKey("Report", Long.toString(reportId)).toString();
             String reportJSON = stub.getStringState(key);
@@ -288,39 +323,37 @@ public class SmartContract implements ContractInterface {
             if(report.getDoctorSignature() == null && hasRole(ctx, "doctor")){
                 report.setDoctorSignature(client);
                 report.setDoctorDepartment(department);
-
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if(report.getHeadOfDepartmentSignature() == null && report.getDoctorDepartment().equals(department) && hasRole(ctx, "head_department")) {
                 report.setHeadOfDepartmentSignature(client);
-
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if(report.getHospitalManagerSignature() == null && hasRole(ctx,"hospital_manager")) {
                 report.setHospitalManagerSignature(client);
-
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if(report.getMedicalCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_medical_lead")) {
-                report.addMedicalCommitteeSignature(client);
+                List<String> signatures = report.getMedicalCommitteeSignatures();
+                signatures.add(client);
+                report.setMedicalCommitteeSignatures(signatures);
                 report.updateTransferDetails(country, city, hospital, dept, new Date(date));
-
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if(report.getMedicalCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_medical")) {
-                report.addMedicalCommitteeSignature(client);
-
+                List<String> signatures = report.getMedicalCommitteeSignatures();
+                signatures.add(client);
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if(report.getFinancialCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_financial_lead")) {
-                report.addFinancialCommitteeSignature(client);
+                List<String> signatures = report.getFinancialCommitteeSignatures();
+                signatures.add(client);
                 report.updateTransferCoverage(coverag);
-
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if(report.getFinancialCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_financial")) {
-                report.addFinancialCommitteeSignature(client);
-
+                List<String> signatures = report.getFinancialCommitteeSignatures();
+                signatures.add(client);
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             }

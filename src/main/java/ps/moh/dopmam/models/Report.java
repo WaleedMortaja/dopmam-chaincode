@@ -59,10 +59,10 @@ public class Report {
     private String hospitalManagerSignature;
 
     @Property()
-    private final List<String> medicalCommitteeSignatures;
+    private List<String> medicalCommitteeSignatures;
 
     @Property()
-    private final List<String> financialCommitteeSignatures;
+    private List<String> financialCommitteeSignatures;
 
     public Report(@JsonProperty("reportId") final long reportId,
                   @JsonProperty("patientNationalId") final long patientNationalId,
@@ -147,11 +147,11 @@ public class Report {
 
     public List<String> getMedicalCommitteeSignatures() {
 
-        return new ArrayList<>(medicalCommitteeSignatures);
+        return this.medicalCommitteeSignatures;
     }
 
     public List<String> getFinancialCommitteeSignatures() {
-        return new ArrayList<>(financialCommitteeSignatures);
+        return this.financialCommitteeSignatures;
     }
 
     public void setDoctorSignature(String doctorSignature) {
@@ -185,12 +185,12 @@ public class Report {
         throw new IllegalStateException("Hospital Manager had already signed!");
     }
 
-    public void addMedicalCommitteeSignature(String medicalCommitteeSignature) {
-        this.medicalCommitteeSignatures.add(medicalCommitteeSignature);
+    public void setMedicalCommitteeSignatures(List<String> medicalCommitteeSignatures) {
+        this.medicalCommitteeSignatures = medicalCommitteeSignatures;
     }
 
-    public void addFinancialCommitteeSignature(String financialCommitteeSignature) {
-        this.financialCommitteeSignatures.add(financialCommitteeSignature);
+    public void setFinancialCommitteeSignatures(List<String> financialCommitteeSignatures) {
+        this.financialCommitteeSignatures = financialCommitteeSignatures;
     }
 
     public void updateTransferDetails(final String transferToCountry, final String transferToCity, final String transferToHospital, final String transferToDepartment, final Date transferDueDate) {
