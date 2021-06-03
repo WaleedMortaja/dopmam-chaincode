@@ -276,22 +276,20 @@ public class SmartContract implements ContractInterface {
         ChaincodeStub stub = ctx.getStub();
         List<Report> reports = new ArrayList<>();
 
-        try {
-            String key = stub.createCompositeKey("Report", "4").toString();
-            QueryResultsIterator<KeyValue> results = stub.getStateByPartialCompositeKey("Report");
+        QueryResultsIterator<KeyValue> results = stub.getStateByPartialCompositeKey("Report");
 
-            for (KeyValue result : results) {
+        for (KeyValue result : results) {
+            try {
                 Report report = genson.deserialize(result.getStringValue(), Report.class);
                 System.out.println("Id: " + report.getReportId());
                 if(canViewReport(ctx, report.getReportId())){
                     reports.add(report);
                 }
+            } catch (Exception e) {
+
             }
-            return genson.serialize(reports);
-        } catch (Exception e){
-            System.out.println("Ahmed: " + e);
-            return "fdfs";
         }
+        return genson.serialize(reports);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
