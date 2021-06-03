@@ -193,15 +193,27 @@ public class Report {
         this.financialCommitteeSignatures = financialCommitteeSignatures;
     }
 
-    public void updateTransferDetails(final String transferToCountry, final String transferToCity, final String transferToHospital, final String transferToDepartment, final Date transferDueDate) {
+    public void setTransferToCountry(String transferToCountry) {
         this.transferToCountry = transferToCountry;
+    }
+
+    public void setTransferToCity(String transferToCity) {
         this.transferToCity = transferToCity;
+    }
+
+    public void setTransferToHospital(String transferToHospital) {
         this.transferToHospital = transferToHospital;
+    }
+
+    public void setTransferToDepartment(String transferToDepartment) {
         this.transferToDepartment = transferToDepartment;
+    }
+
+    public void setTransferDueDate(Date transferDueDate) {
         this.transferDueDate = transferDueDate;
     }
 
-    public void updateTransferCoverage(double coverage) {
+    public void setCoverage(double coverage) {
         this.coverage = coverage;
     }
 }
