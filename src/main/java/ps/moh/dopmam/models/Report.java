@@ -60,10 +60,10 @@ public class Report {
     private String hospitalManagerSignature;
 
     @Property()
-    private Collection<String> medicalCommitteeSignatures;
+    private List<String> medicalCommitteeSignatures;
 
     @Property()
-    private Collection<String> financialCommitteeSignatures;
+    private List<String> financialCommitteeSignatures;
 
     public Report(@JsonProperty("reportId") final long reportId,
                   @JsonProperty("patientNationalId") final long patientNationalId,
@@ -78,7 +78,9 @@ public class Report {
         this.diagnosis = diagnosis;
         this.procedure = procedure;
 
-        this.medicalCommitteeSignatures = new ArrayList<>();
+        if(this.medicalCommitteeSignatures == null) {
+            this.medicalCommitteeSignatures = new ArrayList<>();
+        }
         this.financialCommitteeSignatures = new ArrayList<>();
     }
 
