@@ -62,6 +62,10 @@ public class Report {
     @Property()
     private List<String> medicalCommitteeSignatures;
 
+    public void setMedicalCommitteeSignatures(List<String> medicalCommitteeSignatures) {
+        this.medicalCommitteeSignatures = medicalCommitteeSignatures;
+    }
+
     @Property()
     private List<String> financialCommitteeSignatures;
 
@@ -149,8 +153,7 @@ public class Report {
     }
 
     public List<String> getMedicalCommitteeSignatures() {
-
-        return new ArrayList<>(medicalCommitteeSignatures);
+        return this.medicalCommitteeSignatures;
     }
 
     public List<String> getFinancialCommitteeSignatures() {

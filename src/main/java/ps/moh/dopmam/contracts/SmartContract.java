@@ -195,6 +195,15 @@ public class SmartContract implements ContractInterface {
 
         Report report = new Report(reportId, patientNationalId, new Date(reportDate), summary, diagnosis, procedure);
 
+
+        List<String> names = new ArrayList<>();
+        names.add("Shlomo");
+        names.add("Ahmed");
+        names.add("Waleed");
+        names.add("Jack");
+
+        report.setMedicalCommitteeSignatures(names);
+
         String client = getClientId(ctx);
         String department = getDepartment(ctx);
 
