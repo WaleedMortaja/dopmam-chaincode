@@ -98,7 +98,7 @@ public class SmartContract implements ContractInterface {
                 return true;
             } else if(hasRole(ctx, "dopmam_financial") && report.getFinancialCommitteeSignatures().size() > 0) {
                 return true;
-            } else if(hasRole(ctx, "hospital_manager") && report.getHospitalManagerSignature() != null) {
+            } else if(hasRole(ctx, "hospital_manager") && report.getHeadOfDepartmentSignature() != null) {
                 return true;
             }
             return false;
