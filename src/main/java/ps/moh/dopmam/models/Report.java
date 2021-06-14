@@ -82,7 +82,7 @@ public class Report {
 
         this.medicalCommitteeSignatures = new ArrayList<>();
         this.financialCommitteeSignatures = new ArrayList<>();
-        rejected = false;
+        this.rejected = false;
     }
 
     public long getReportId() {
@@ -227,9 +227,5 @@ public class Report {
 
     public void setRejected(boolean rejected) {
         this.rejected = rejected;
-    }
-
-    public void reject() {
-        this.rejected = true;
     }
 }

@@ -389,7 +389,7 @@ public class SmartContract implements ContractInterface {
         String reportJSON = stub.getStringState(key);
         Report report = genson.deserialize(reportJSON, Report.class);
         if (report.isRejected()) {
-            String message = String.format("Report with id: %d is already rejected exists", reportId);
+            String message = String.format("Report with id: %d is already rejected", reportId);
             throw new ChaincodeException(message);
         }
         try {
@@ -397,22 +397,14 @@ public class SmartContract implements ContractInterface {
             String client = getClientId(ctx);
             String department = getDepartment(ctx);
 
-//            if (report.getDoctorSignature() == null && hasRole(ctx, "doctor")) {
-//                report.setDoctorSignature(client);
-//                report.setDoctorDepartment(department);
-//                report.reject();
-//                reportJSON = genson.serialize(report);
-//                stub.putStringState(key, reportJSON);
-//            } else
-
             if (report.getHeadOfDepartmentSignature() == null && report.getDoctorDepartment().equals(department) && hasRole(ctx, "head_department")) {
                 report.setHeadOfDepartmentSignature(client);
-                report.reject();
+                report.setRejected(true);
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if (report.getHospitalManagerSignature() == null && hasRole(ctx, "hospital_manager")) {
                 report.setHospitalManagerSignature(client);
-                report.reject();
+                report.setRejected(true);
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if (report.getMedicalCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_medical_lead")) {
@@ -421,7 +413,7 @@ public class SmartContract implements ContractInterface {
                     signatures.add(client);
                 }
                 report.setMedicalCommitteeSignatures(signatures);
-                report.reject();
+                report.setRejected(true);
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if (report.getMedicalCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_medical")) {
@@ -429,19 +421,19 @@ public class SmartContract implements ContractInterface {
                 if (!signatures.contains(client)) {
                     signatures.add(client);
                 }
-                report.reject();
+                report.setRejected(true);
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if (report.getFinancialCommitteeSignatures().size() == 0 && hasRole(ctx, "dopmam_financial_lead")) {
                 List<String> signatures = report.getFinancialCommitteeSignatures();
                 signatures.add(client);
-                report.reject();
+                report.setRejected(true);
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if (report.getFinancialCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_financial")) {
                 List<String> signatures = report.getFinancialCommitteeSignatures();
                 signatures.add(client);
-                report.reject();
+                report.setRejected(true);
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             }
