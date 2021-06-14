@@ -64,6 +64,9 @@ public class Report {
     @Property()
     private List<String> financialCommitteeSignatures;
 
+    @Property()
+    private boolean rejected;
+
     public Report(@JsonProperty("reportId") final long reportId,
                   @JsonProperty("patientNationalId") final long patientNationalId,
                   @JsonProperty("reportDate") final Date reportDate,
@@ -79,6 +82,7 @@ public class Report {
 
         this.medicalCommitteeSignatures = new ArrayList<>();
         this.financialCommitteeSignatures = new ArrayList<>();
+        rejected = false;
     }
 
     public long getReportId() {
@@ -215,5 +219,17 @@ public class Report {
 
     public void setCoverage(double coverage) {
         this.coverage = coverage;
+    }
+
+    public boolean isRejected() {
+        return rejected;
+    }
+
+    public void setRejected(boolean rejected) {
+        this.rejected = rejected;
+    }
+
+    public void reject() {
+        this.rejected = true;
     }
 }
