@@ -96,7 +96,7 @@ public class SmartContract implements ContractInterface {
                 return true;
             } else if(hasRole(ctx, "dopmam_medical") && report.getMedicalCommitteeSignatures().size() > 0) {
                 return true;
-            } else if(hasRole(ctx, "dopmam_financial_lead") && report.getMedicalCommitteeSignatures().size() > 2) {
+            } else if(hasRole(ctx, "dopmam_financial_lead") && report.getMedicalCommitteeSignatures().size() == 4) {
                 return true;
             } else if(hasRole(ctx, "dopmam_financial") && report.getFinancialCommitteeSignatures().size() > 0) {
                 return true;
@@ -357,15 +357,20 @@ public class SmartContract implements ContractInterface {
                     }
                     reportJSON = genson.serialize(report);
                     stub.putStringState(key, reportJSON);
-                } else if (report.getFinancialCommitteeSignatures().size() == 0 && report.getMedicalCommitteeSignatures().size() > 2 && hasRole(ctx, "dopmam_financial_lead")) {
+                } else if (report.getFinancialCommitteeSignatures().size() == 0 && report.getMedicalCommitteeSignatures().size() ==4 && hasRole(ctx, "dopmam_financial_lead")) {
                     List<String> signatures = report.getFinancialCommitteeSignatures();
-                    signatures.add(client);
+                    if (!signatures.contains(client)) {
+                        signatures.add(client);
+                    }
                     report.setCoverage(coverage);
+                    System.out.println("Debug Coverage: " + String.valueOf(coverage));
                     reportJSON = genson.serialize(report);
                     stub.putStringState(key, reportJSON);
                 } else if (report.getFinancialCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_financial")) {
                     List<String> signatures = report.getFinancialCommitteeSignatures();
-                    signatures.add(client);
+                    if (!signatures.contains(client)) {
+                        signatures.add(client);
+                    }
                     reportJSON = genson.serialize(report);
                     stub.putStringState(key, reportJSON);
                 }
@@ -382,6 +387,11 @@ public class SmartContract implements ContractInterface {
 
         if (!reportExists(ctx, reportId)) {
             String message = String.format("Report with id: %d not exists", reportId);
+            throw new ChaincodeException(message);
+        }
+
+        if (!canViewReport(ctx, reportId)) {
+            String message = String.format("Unauthorized access");
             throw new ChaincodeException(message);
         }
 
@@ -424,15 +434,19 @@ public class SmartContract implements ContractInterface {
                 report.setRejected(true);
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
-            } else if (report.getFinancialCommitteeSignatures().size() == 0 && report.getMedicalCommitteeSignatures().size() > 2 && hasRole(ctx, "dopmam_financial_lead")) {
+            } else if (report.getFinancialCommitteeSignatures().size() == 0 && report.getMedicalCommitteeSignatures().size() == 4 && hasRole(ctx, "dopmam_financial_lead")) {
                 List<String> signatures = report.getFinancialCommitteeSignatures();
-                signatures.add(client);
+                if (!signatures.contains(client)) {
+                    signatures.add(client);
+                }
                 report.setRejected(true);
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);
             } else if (report.getFinancialCommitteeSignatures().size() > 0 && hasRole(ctx, "dopmam_financial")) {
                 List<String> signatures = report.getFinancialCommitteeSignatures();
-                signatures.add(client);
+                if (!signatures.contains(client)) {
+                    signatures.add(client);
+                }
                 report.setRejected(true);
                 reportJSON = genson.serialize(report);
                 stub.putStringState(key, reportJSON);

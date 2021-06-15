@@ -129,10 +129,6 @@ public class Report {
         return transferDueDate;
     }
 
-    public double getCoverage() {
-        return coverage;
-    }
-
     public String getDoctorSignature() {
         return doctorSignature;
     }
@@ -217,15 +213,19 @@ public class Report {
         this.transferDueDate = transferDueDate;
     }
 
-    public void setCoverage(double coverage) {
-        this.coverage = coverage;
-    }
-
     public boolean isRejected() {
         return rejected;
     }
 
     public void setRejected(boolean rejected) {
         this.rejected = rejected;
+    }
+
+    public double getCoverage() {
+        return coverage;
+    }
+
+    public void setCoverage(double coverage) {
+        this.coverage = coverage;
     }
 }
