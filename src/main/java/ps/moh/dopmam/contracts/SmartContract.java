@@ -211,9 +211,9 @@ public class SmartContract implements ContractInterface {
             final Context ctx,
             final long patientNationalId,
             final long reportDate,
-            final String summary,
+            final String medicalHistoryAndClinicalFindings,
             final String diagnosis,
-            final String procedure
+            final String recommendation
     ) throws CertificateException, IOException {
         ChaincodeStub stub = ctx.getStub();
 
@@ -229,7 +229,7 @@ public class SmartContract implements ContractInterface {
 
         long reportId = getNewReportId(ctx);
 
-        Report report = new Report(reportId, patientNationalId, new Date(reportDate), summary, diagnosis, procedure);
+        Report report = new Report(reportId, patientNationalId, new Date(reportDate), medicalHistoryAndClinicalFindings, diagnosis, recommendation);
 
         String client = getClientId(ctx);
         String department = getDepartment(ctx);

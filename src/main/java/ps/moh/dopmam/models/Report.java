@@ -20,13 +20,13 @@ public class Report {
     private final Date reportDate;
 
     @Property()
-    private final String summary;
+    private final String medicalHistoryAndClinicalFindings;
 
     @Property()
     private final String diagnosis;
 
     @Property()
-    private final String procedure;
+    private final String recommendation;
 
     @Property()
     private String transferToCountry;
@@ -70,15 +70,15 @@ public class Report {
     public Report(@JsonProperty("reportId") final long reportId,
                   @JsonProperty("patientNationalId") final long patientNationalId,
                   @JsonProperty("reportDate") final Date reportDate,
-                  @JsonProperty("summary") final String summary,
+                  @JsonProperty("medicalHistoryAndClinicalFindings") final String medicalHistoryAndClinicalFindings,
                   @JsonProperty("diagnosis") final String diagnosis,
-                  @JsonProperty("procedure") final String procedure) {
+                  @JsonProperty("recommendation") final String recommendation) {
         this.reportId = reportId;
         this.patientNationalId = patientNationalId;
         this.reportDate = reportDate;
-        this.summary = summary;
+        this.medicalHistoryAndClinicalFindings = medicalHistoryAndClinicalFindings;
         this.diagnosis = diagnosis;
-        this.procedure = procedure;
+        this.recommendation = recommendation;
 
         this.medicalCommitteeSignatures = new ArrayList<>();
         this.financialCommitteeSignatures = new ArrayList<>();
@@ -97,16 +97,16 @@ public class Report {
         return reportDate;
     }
 
-    public String getSummary() {
-        return summary;
+    public String getMedicalHistoryAndClinicalFindings() {
+        return medicalHistoryAndClinicalFindings;
     }
 
     public String getDiagnosis() {
         return diagnosis;
     }
 
-    public String getProcedure() {
-        return procedure;
+    public String getRecommendation() {
+        return recommendation;
     }
 
     public String getTransferToCountry() {
